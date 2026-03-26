@@ -1,0 +1,11 @@
+changes:
+1. for the album art color, it should apply to the whole app including the background(but in a light glow)
+2. all the confirmation dialogs should be from the app itself, with its colors and fonts
+3. song rows should all be the same size for uniformity
+4. for the resizing, on bothe the player and sidebar, there should be a limit of how far so that everything remains properly visible and spaced
+5. the elements on the add songs to playlist popup are a bit bland/flat, like the buttons make them with the theme of our app
+5. the view as grid option at the top close to the select button doesnt work, when it is clicked, the songs should be arranged in a grid order like how it does in the other tabs(albums, artists and genres)
+6. the dark mode looks a bit boring too, maybe add a touch/tinge of the adaptive color
+7. when i expand the playing card, the song controls look weird, they are not properly shaped/sized/formated
+8. increase the width of the universall scrollbar to be just a bit wide
+9. for the songs that dont have album covers: find a beautiful icon to use, but to make it look better, maybe randomise the color of that icon on each song cover

@@ -1,0 +1,48 @@
+{
+  "name": "koda",
+  "version": "1.0.0",
+  "description": "A clean, minimal offline music player",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build:dir": "electron-builder --win --x64 --dir"
+  },
+  "build": {
+    "appId": "com.koda.player",
+    "productName": "Koda",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ]
+  },
+  "keywords": [
+    "music",
+    "player",
+    "electron"
+  ],
+  "author": "Koda",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.0.4",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "music-metadata": "^11.12.3"
+  }
+}
