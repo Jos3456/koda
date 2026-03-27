@@ -1,0 +1,61 @@
+const { app, BrowserWindow, ipcMain, dialog, nativeTheme } = require('electron');
+const path = require('path');
+const fs = require('fs');
+
+let mainWindow;
+
+// ... (window creation code unchanged)
+
+// New handlers
+ipcMain.handle('delete-file', async (event, filePath) => {
+  try {
+    fs.unlinkSync(filePath);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+});
+
+ipcMain.handle('pick-image', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'] }],
+  });
+  if (result.canceled || !result.filePaths.length) return null;
+  const filePath = result.filePaths[0];
+  const data = fs.readFileSync(filePath);
+  const base64 = data.toString('base64');
+  const ext = path.extname(filePath).slice(1).toLowerCase();
+  return `data:image/${ext};base64,${base64}`;
+});
+
+// Modify load/save settings to include playlists and favourites
+const settingsPath = path.join(app.getPath('userData'), 'koda-settings.json');
+
+ipcMain.handle('load-settings', () => {
+  try {
+    if (fs.existsSync(settingsPath)) {
+      const data = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+      // Ensure arrays exist
+      if (!data.playlists) data.playlists = [];
+      if (!data.favourites) data.favourites = [];
+      return data;
+    }
+  } catch (e) {}
+  return { playlists: [], favourites: [] };
+});
+
+ipcMain.handle('save-settings', (event, settings) => {
+  try {
+    // Ensure we don't lose existing arrays if they're not provided
+    const existing = fs.existsSync(settingsPath) ? JSON.parse(fs.readFileSync(settingsPath, 'utf8')) : {};
+    const merged = { ...existing, ...settings };
+    fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2));
+    return true;
+  } catch (e) {
+    return false;
+  }
+});
+
+// ... rest of main.js unchanged
