@@ -1833,21 +1833,47 @@ function bindEvents() {
   selectionModeBtn.addEventListener('click', toggleSelectionMode);
 
   npCard.addEventListener('click', (e) => {
-    if (e.target.closest('.np-menu-btn')) return;
+    if (e.target.closest('.np-action-btn')) return;
     if (state.currentTrack) showNowPlayingExpanded();
   });
 
-  const npMenuBtn = document.createElement('button');
-  npMenuBtn.className = 'np-menu-btn';
-  npMenuBtn.type = 'button';
-  npMenuBtn.title = 'More options';
-  npMenuBtn.setAttribute('aria-label', 'More options');
-  npMenuBtn.textContent = '⋯';
-  npCard.appendChild(npMenuBtn);
-  npMenuBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack);
+  // Quick actions on the mini now-playing card.
+  const npActions = document.createElement('div');
+  npActions.className = 'np-actions';
+
+  const npAction = (label, icon, handler, danger = false) => {
+    const btn = document.createElement('button');
+    btn.className = 'np-action-btn' + (danger ? ' danger' : '');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', label);
+    btn.dataset.tooltip = label;
+    btn.innerHTML = icon;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (state.currentTrack) handler(state.currentTrack, e);
+    });
+    npActions.appendChild(btn);
+  };
+  npAction('Favourite', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>', (track) => {
+    toggleFavourite(track.id);
+    updateHeartButton();
   });
+  npAction('Add to playlist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><path d="M8 11h7M8 15h5M19 11v8M15 15h8"/></svg>', (track) => showPlaylistPicker(track));
+  npAction('Details', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>', (track) => {
+    const tracks = state.library.filter(t => t.album === track.album);
+    openDetail('album', track.album, tracks);
+  });
+  npAction('View artist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', (track) => {
+    const tracks = state.library.filter(t => t.artist === track.artist);
+    openDetail('artist', track.artist, tracks);
+  });
+  npAction('View album', '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>', (track) => {
+    const tracks = state.library.filter(t => t.album === track.album);
+    openDetail('album', track.album, tracks);
+  });
+  npAction('Delete', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>', (track) => deleteTrack(track), true);
+
+  npCard.appendChild(npActions);
 
   // Expanded now-playing button
   const expandBtn = document.createElement('button');
