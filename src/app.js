@@ -213,7 +213,7 @@ function updateMediaMetadata() {
       title: state.currentTrack.title,
       artist: state.currentTrack.artist,
       album: state.currentTrack.album,
-      artwork: state.currentTrack.art ? [{ src: state.currentTrack.art, sizes: '512x512', type: 'image/jpeg' }] : []
+      artwork: getTrackArt(state.currentTrack) ? [{ src: getTrackArt(state.currentTrack), sizes: '512x512', type: 'image/jpeg' }] : []
     });
   }
 }
@@ -420,6 +420,23 @@ function renderSongList(tracks, container) {
   }
 }
 
+function getTrackArt(track) {
+  if (track?.art) return track.art;
+
+  const album = track?.album;
+  if (album) {
+    const albumArt = state.library.find(t => t.album === album && t.art)?.art;
+    if (albumArt) return albumArt;
+  }
+
+  const artist = track?.artist;
+  if (artist) {
+    return state.library.find(t => t.artist === artist && t.art)?.art || null;
+  }
+
+  return null;
+}
+
 function renderSongGrid(tracks, container) {
   const grid = document.createElement('div');
   grid.className = 'grid-view';
@@ -428,9 +445,10 @@ function renderSongGrid(tracks, container) {
     card.className = 'grid-card song-grid-card';
     const artDiv = document.createElement('div');
     artDiv.className = 'grid-art';
-    if (track.art) {
+    const displayArt = getTrackArt(track);
+    if (displayArt) {
       const img = document.createElement('img');
-      img.src = track.art;
+      img.src = displayArt;
       artDiv.appendChild(img);
     } else {
       // use placeholder icon with randomized color
@@ -549,10 +567,11 @@ function renderGrid(groups, type, container) {
     card.className = 'grid-card';
     const artDiv = document.createElement('div');
     artDiv.className = 'grid-art';
-    const artTrack = tracks.find(t => t.art);
-    if (artTrack) {
+    const artTrack = tracks.find(t => getTrackArt(t));
+    const displayArt = artTrack ? getTrackArt(artTrack) : null;
+    if (displayArt) {
       const img = document.createElement('img');
-      img.src = artTrack.art;
+      img.src = displayArt;
       img.alt = name;
       artDiv.appendChild(img);
     } else {
@@ -852,14 +871,15 @@ function loadTrack(track) {
   playerArtist.textContent = track.artist || '—';
   playerAlbum.textContent = track.album || '';
 
-  if (track.art) {
-    artImg.src = track.art;
+  const displayArt = getTrackArt(track);
+  if (displayArt) {
+    artImg.src = displayArt;
     artImg.classList.remove('hidden');
     artEmpty.classList.add('hidden');
     if (state.settings.dynamicTheme) {
-      extractAndApplyTheme(track.art);
+      extractAndApplyTheme(displayArt);
     }
-    npArt.src = track.art;
+    npArt.src = displayArt;
     npArt.classList.remove('hidden');
   } else {
     artImg.classList.add('hidden');
@@ -1548,8 +1568,11 @@ function addHeartButton() {
 }
 
 function showNowPlayingMenu(e, track) {
-  // Reuse the existing context-menu actions, but position the menu so it stays
-  // fully visible above the mini-player when opened from the sidebar.
+  // Capture the clicked button's geometry before the event object loses currentTarget.
+  const anchor = e.currentTarget || e.target;
+  const anchorRect = anchor?.getBoundingClientRect?.() || npCard.getBoundingClientRect();
+
+  // Reuse the existing context-menu actions.
   showContextMenu(e, track, false);
   const existing = Array.from(contextMenu.querySelectorAll('button'));
   existing.forEach(btn => btn.remove());
@@ -1580,14 +1603,21 @@ function showNowPlayingMenu(e, track) {
   addOption('Delete from disk', () => deleteTrack(track), true);
 
   requestAnimationFrame(() => {
-    const rect = e.currentTarget?.getBoundingClientRect?.() || npCard.getBoundingClientRect();
     const menuRect = contextMenu.getBoundingClientRect();
     const margin = 8;
-    let left = rect.right - menuRect.width;
-    let top = rect.bottom + margin;
-    if (top + menuRect.height > window.innerHeight - margin) top = rect.top - menuRect.height - margin;
+
+    // Keep the menu centered directly above the button. Only fall back below
+    // when there is literally not enough vertical room above it.
+    let left = anchorRect.left + (anchorRect.width - menuRect.width) / 2;
+    let top = anchorRect.top - menuRect.height - margin;
+
+    if (top < margin) {
+      top = anchorRect.bottom + margin;
+    }
+
     left = Math.max(margin, Math.min(left, window.innerWidth - menuRect.width - margin));
     top = Math.max(margin, Math.min(top, window.innerHeight - menuRect.height - margin));
+
     contextMenu.style.left = `${left}px`;
     contextMenu.style.top = `${top}px`;
   });
@@ -1620,8 +1650,21 @@ function updateExpandedNowPlaying() {
   const expanded = document.getElementById('now-playing-expanded');
   if (!expanded || !state.currentTrack) return;
   const track = state.currentTrack;
-  document.getElementById('expanded-art').src = track.art || '';
-  document.getElementById('expanded-backdrop').style.backgroundImage = track.art ? 'url("' + track.art + '")' : '';
+  const displayArt = getTrackArt(track);
+  const expandedArt = document.getElementById('expanded-art');
+  const expandedArtWrap = expandedArt.closest('.np-expanded-art-wrap');
+
+  if (displayArt) {
+    expandedArt.src = displayArt;
+    expandedArt.style.display = 'block';
+    expandedArtWrap.classList.remove('no-art');
+    document.getElementById('expanded-backdrop').style.backgroundImage = 'url("' + displayArt + '")';
+  } else {
+    expandedArt.removeAttribute('src');
+    expandedArt.style.display = 'none';
+    expandedArtWrap.classList.add('no-art');
+    document.getElementById('expanded-backdrop').style.backgroundImage = '';
+  }
   document.getElementById('expanded-title').textContent = track.title || '—';
   document.getElementById('expanded-artist').textContent = track.artist || '—';
   document.getElementById('expanded-album').textContent = track.album || '';
@@ -1646,7 +1689,8 @@ function updateExpandedNowPlaying() {
   const related = document.getElementById('expanded-related'); related.innerHTML = '';
   state.library.filter(t => t.album === track.album && t.id !== track.id).slice(0, 12).forEach(t => {
     const row = document.createElement('button'); row.className = 'np-expanded-list-item';
-    row.innerHTML = '<span class="np-list-art">' + (t.art ? '<img src="' + t.art + '" alt="">' : '♪') + '</span><span class="np-list-text"><strong>' + esc(t.title) + '</strong><small>' + esc(t.artist) + '</small></span>';
+    const relatedArt = getTrackArt(t);
+    row.innerHTML = '<span class="np-list-art">' + (relatedArt ? '<img src="' + relatedArt + '" alt="">' : '♪') + '</span><span class="np-list-text"><strong>' + esc(t.title) + '</strong><small>' + esc(t.artist) + '</small></span>';
     row.addEventListener('click', () => { const tracks = state.library.filter(x => x.album === t.album); playFromList(tracks, tracks.findIndex(x => x.id === t.id)); updateExpandedNowPlaying(); });
     related.appendChild(row);
   });
