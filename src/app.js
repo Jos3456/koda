@@ -16,7 +16,7 @@ const state = {
   volume: 0.8,
   muted: false,
   currentView: 'songs',
-  layout: 'list',
+  layout: 'grid',
   searchQuery: '',
   queueOpen: false,
   settings: {
@@ -69,6 +69,7 @@ const loadingText  = $('loading-text');
 const viewTitle    = $('view-title');
 const viewCount    = $('view-count');
 const searchInput  = $('search-input');
+const searchClear  = $('search-clear');
 const npCard       = $('now-playing-card');
 const npArt        = $('np-art');
 const npTitle      = $('np-title');
@@ -101,6 +102,7 @@ async function init() {
   if (settings.folderPath) state.folderPath = settings.folderPath;
   if (settings.settings) Object.assign(state.settings, settings.settings);
   if (settings.lightTheme !== undefined) state.lightTheme = settings.lightTheme;
+  if (settings.layout === 'list' || settings.layout === 'grid') state.layout = settings.layout;
   if (settings.favourites) state.favourites = new Set(settings.favourites);
   if (settings.playlists) state.playlists = settings.playlists;
 
@@ -450,11 +452,30 @@ function renderSongGrid(tracks, container) {
     subDiv.className = 'grid-sub';
     subDiv.textContent = track.artist;
     card.appendChild(subDiv);
-    card.addEventListener('click', () => {
-      // play this track and set queue to all songs (or just this track)
+    card.addEventListener('click', (e) => {
+      if (state.selectionMode) {
+        if (e.target.closest('.grid-selection')) return;
+        toggleTrackSelection(track.id);
+        return;
+      }
       const idx = tracks.findIndex(t => t.id === track.id);
       playFromList(tracks, idx);
     });
+
+    if (state.selectionMode) {
+      const select = document.createElement('button');
+      select.type = 'button';
+      select.className = 'grid-selection';
+      select.title = state.selectedTracks.has(track.id) ? 'Deselect song' : 'Select song';
+      select.setAttribute('aria-label', select.title);
+      select.textContent = state.selectedTracks.has(track.id) ? '✓' : '';
+      if (state.selectedTracks.has(track.id)) card.classList.add('selected');
+      select.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleTrackSelection(track.id);
+      });
+      card.appendChild(select);
+    }
     card.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       showContextMenu(e, track, false);
@@ -809,6 +830,12 @@ function loadTrack(track) {
   audio.src = `file://${track.path.replace(/\\/g, '/')}`;
 
   playerTitle.textContent = track.title || '—';
+  playerTitle.classList.remove('marquee-title');
+  requestAnimationFrame(() => {
+    if (playerTitle.scrollWidth > playerTitle.clientWidth) {
+      playerTitle.classList.add('marquee-title');
+    }
+  });
   playerArtist.textContent = track.artist || '—';
   playerAlbum.textContent = track.album || '';
 
@@ -1224,6 +1251,7 @@ async function saveSettings() {
     folderPath: state.folderPath,
     settings: state.settings,
     lightTheme: state.lightTheme,
+    layout: state.layout,
     favourites: Array.from(state.favourites),
     playlists: state.playlists,
   });
@@ -1245,6 +1273,7 @@ document.querySelectorAll('.view-toggle').forEach(btn => {
     state.layout = btn.dataset.layout;
     document.querySelectorAll('.view-toggle').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    saveSettings();
     renderCurrentView();
   });
 });
@@ -1450,6 +1479,12 @@ function toggleSelectionMode() {
   renderCurrentView();
 }
 
+function toggleTrackSelection(trackId) {
+  if (state.selectedTracks.has(trackId)) state.selectedTracks.delete(trackId);
+  else state.selectedTracks.add(trackId);
+  renderCurrentView();
+}
+
 function clearSelection() {
   state.selectedTracks.clear();
   document.querySelectorAll('.song-checkbox').forEach(cb => cb.checked = false);
@@ -1495,6 +1530,37 @@ function addHeartButton() {
     });
     playerInfo.appendChild(heart);
   }
+}
+
+function showNowPlayingMenu(e, track) {
+  showContextMenu(e, track, false);
+  const existing = Array.from(contextMenu.querySelectorAll('button'));
+  existing.forEach(btn => btn.remove());
+  const addOption = (text, handler, danger = false) => {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    if (danger) btn.classList.add('danger');
+    btn.addEventListener('click', () => {
+      contextMenu.classList.add('hidden');
+      handler();
+    });
+    contextMenu.appendChild(btn);
+  };
+
+  addOption('Add to playlist', () => showPlaylistPicker(track));
+  addOption('View details', () => {
+    const tracks = state.library.filter(t => t.album === track.album);
+    openDetail('album', track.album, tracks);
+  });
+  addOption('Open album', () => {
+    const tracks = state.library.filter(t => t.album === track.album);
+    openDetail('album', track.album, tracks);
+  });
+  addOption('Open artist', () => {
+    const tracks = state.library.filter(t => t.artist === track.artist);
+    openDetail('artist', track.artist, tracks);
+  });
+  addOption('Delete from disk', () => deleteTrack(track), true);
 }
 
 // ——— NOW PLAYING EXPANDED ———
@@ -1561,7 +1627,16 @@ function bindEvents() {
   });
 
   searchInput.addEventListener('input', () => {
-    state.searchQuery = searchInput.value;
+    state.searchQuery = searchInput.value.trim();
+    searchClear.classList.toggle('hidden', !state.searchQuery);
+    renderCurrentView();
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    state.searchQuery = '';
+    searchClear.classList.add('hidden');
+    searchInput.focus();
     renderCurrentView();
   });
 
@@ -1616,10 +1691,28 @@ function bindEvents() {
   settingsModal.appendChild(lightThemeRow);
   document.getElementById('toggle-light').addEventListener('change', (e) => {
     state.lightTheme = e.target.checked;
-    toggleLightTheme();
+    document.body.classList.toggle('light', state.lightTheme);
+    saveSettings();
   });
 
   selectionModeBtn.addEventListener('click', toggleSelectionMode);
+
+  npCard.addEventListener('click', (e) => {
+    if (e.target.closest('.np-menu-btn')) return;
+    if (state.currentTrack) showNowPlayingExpanded();
+  });
+
+  const npMenuBtn = document.createElement('button');
+  npMenuBtn.className = 'np-menu-btn';
+  npMenuBtn.type = 'button';
+  npMenuBtn.title = 'More options';
+  npMenuBtn.setAttribute('aria-label', 'More options');
+  npMenuBtn.textContent = '⋯';
+  npCard.appendChild(npMenuBtn);
+  npMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack);
+  });
 
   // Expanded now-playing button
   const expandBtn = document.createElement('button');
