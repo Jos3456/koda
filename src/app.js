@@ -1069,6 +1069,8 @@ btnRepeat.addEventListener('click', () => {
 
 function updateShuffleBtn() {
   btnShuffle.classList.toggle('active', state.shuffle);
+  const expandedShuffle = document.getElementById('expanded-shuffle');
+  if (expandedShuffle) expandedShuffle.classList.toggle('active', state.shuffle);
 }
 
 function updateRepeatBtn() {
@@ -1749,7 +1751,9 @@ function updateExpandedNowPlaying() {
   document.getElementById('expanded-current').textContent = formatDuration(audio.currentTime || 0);
   document.getElementById('expanded-total').textContent = formatDuration(audio.duration || track.duration || 0);
   document.getElementById('expanded-seek').value = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-  document.getElementById('expanded-play').textContent = state.isPlaying ? 'Ⅱ' : '▶';
+  const expandedPlay = document.getElementById('expanded-play');
+  expandedPlay.textContent = state.isPlaying ? 'Ⅱ' : '▶';
+  expandedPlay.classList.toggle('is-playing', state.isPlaying);
   document.getElementById('expanded-shuffle').classList.toggle('active', state.shuffle);
   document.getElementById('expanded-repeat').classList.toggle('active', state.repeatMode !== 'none');
   const heart = document.querySelector('.expanded-action[aria-label="Favourite"]');
