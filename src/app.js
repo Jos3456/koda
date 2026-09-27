@@ -1536,6 +1536,8 @@ function addHeartButton() {
 }
 
 function showNowPlayingMenu(e, track) {
+  // Reuse the existing context-menu actions, but position the menu so it stays
+  // fully visible above the mini-player when opened from the sidebar.
   showContextMenu(e, track, false);
   const existing = Array.from(contextMenu.querySelectorAll('button'));
   existing.forEach(btn => btn.remove());
@@ -1564,6 +1566,21 @@ function showNowPlayingMenu(e, track) {
     openDetail('artist', track.artist, tracks);
   });
   addOption('Delete from disk', () => deleteTrack(track), true);
+
+  requestAnimationFrame(() => {
+    const rect = npCard.getBoundingClientRect();
+    const menuRect = contextMenu.getBoundingClientRect();
+    const margin = 8;
+    let left = rect.left;
+    let top = rect.top - menuRect.height - margin;
+
+    // Keep the full menu inside the viewport.
+    left = Math.max(margin, Math.min(left, window.innerWidth - menuRect.width - margin));
+    if (top < margin) top = Math.min(window.innerHeight - menuRect.height - margin, rect.bottom + margin);
+
+    contextMenu.style.left = `${left}px`;
+    contextMenu.style.top = `${top}px`;
+  });
 }
 
 // ——— NOW PLAYING EXPANDED ———
@@ -1641,6 +1658,32 @@ function bindEvents() {
     searchClear.classList.add('hidden');
     searchInput.focus();
     renderCurrentView();
+  });
+
+  // Type anywhere to start searching, unless the user is interacting with another control.
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const target = e.target;
+    const isEditable = target instanceof HTMLElement && (
+      target.matches('input, textarea, select, [contenteditable="true"]')
+    );
+    if (isEditable) return;
+    if (e.key === 'Escape') {
+      if (document.activeElement === searchInput) {
+        searchInput.value = '';
+        state.searchQuery = '';
+        searchClear.classList.add('hidden');
+        renderCurrentView();
+      }
+      return;
+    }
+    if (e.key.length !== 1 || e.key === ' ') return;
+    searchInput.focus();
+    const start = searchInput.value.length;
+    searchInput.setSelectionRange(start, start);
+    searchInput.value += e.key;
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    e.preventDefault();
   });
 
   $('detail-back').addEventListener('click', () => {
