@@ -1794,17 +1794,21 @@ function updateExpandedNowPlaying() {
     document.getElementById('expanded-backdrop').style.backgroundImage = '';
   }
   const expandedTitle = document.getElementById('expanded-title');
-  expandedTitle.textContent = track.title || '—';
-  expandedTitle.classList.remove('marquee-title');
-  expandedTitle.style.removeProperty('--marquee-distance');
-  requestAnimationFrame(() => {
-    if (!expandedTitle.isConnected) return;
-    const overflow = expandedTitle.scrollWidth - expandedTitle.clientWidth;
-    if (overflow > 8) {
-      expandedTitle.style.setProperty('--marquee-distance', `${overflow}px`);
-      expandedTitle.classList.add('marquee-title');
-    }
-  });
+  const expandedTitleText = track.title || '—';
+  if (expandedTitle.dataset.marqueeText !== expandedTitleText) {
+    expandedTitle.dataset.marqueeText = expandedTitleText;
+    expandedTitle.textContent = expandedTitleText;
+    expandedTitle.classList.remove('marquee-title');
+    expandedTitle.style.removeProperty('--marquee-distance');
+    requestAnimationFrame(() => {
+      if (!expandedTitle.isConnected || expandedTitle.dataset.marqueeText !== expandedTitleText) return;
+      const overflow = expandedTitle.scrollWidth - expandedTitle.clientWidth;
+      if (overflow > 8) {
+        expandedTitle.style.setProperty('--marquee-distance', `${overflow}px`);
+        expandedTitle.classList.add('marquee-title');
+      }
+    });
+  }
   document.getElementById('expanded-artist').textContent = track.artist || '—';
   document.getElementById('expanded-album').textContent = track.album || '';
   document.getElementById('expanded-current').textContent = formatDuration(audio.currentTime || 0);
