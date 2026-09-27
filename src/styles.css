@@ -1128,19 +1128,69 @@ html, body {
 
 #now-playing-card { position: relative; cursor: pointer; }
 #now-playing-card:hover { background: var(--surface-2); }
-.np-menu-btn {
+.np-actions {
   margin-left: auto;
   align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+.np-action-btn {
+  position: relative;
   width: 28px;
   height: 28px;
+  padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--surface);
+  background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-.np-menu-btn:hover { color: var(--text-primary); background: var(--surface-2); }
+.np-action-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.np-action-btn:hover { color: var(--text-primary); background: var(--surface-2); }
+.np-action-btn.danger:hover { color: #e84444; }
+.np-action-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 10001;
+  width: max-content;
+  max-width: 150px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-2);
+  color: var(--text-primary);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  font-size: 10px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  line-height: 1.2;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity .12s ease, transform .12s ease;
+}
+.np-action-btn:hover::after,
+.np-action-btn:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 #player-title.marquee-title {
   overflow: hidden;
