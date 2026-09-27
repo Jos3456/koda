@@ -269,6 +269,22 @@ function showState(s) {
 }
 
 // ——— VIEWS ———
+function renderEmptyState(container, { icon = '♪', title = 'Nothing here yet', message = '', actionLabel = '', action = null } = {}) {
+  container.innerHTML = '';
+  const empty = document.createElement('div');
+  empty.className = 'koda-empty-state';
+  empty.innerHTML = `
+    <div class="koda-empty-icon" aria-hidden="true">${icon}</div>
+    <h2>${esc(title)}</h2>
+    <p>${esc(message)}</p>
+    ${actionLabel ? '<button type="button" class="koda-empty-action">' + esc(actionLabel) + '</button>' : ''}
+  `;
+  if (action && actionLabel) {
+    empty.querySelector('.koda-empty-action').addEventListener('click', action);
+  }
+  container.appendChild(empty);
+}
+
 function renderCurrentView() {
   const view = state.currentView;
   const query = state.searchQuery.toLowerCase();
@@ -285,7 +301,25 @@ function renderCurrentView() {
     tracks = tracks.filter(t => state.favourites.has(t.id));
     viewTitle.textContent = 'Favourites';
     viewCount.textContent = `${tracks.length} songs`;
-    renderSongList(tracks, libraryView);
+    if (!tracks.length) {
+      const searching = Boolean(query);
+      renderEmptyState(libraryView, {
+        icon: '★',
+        title: searching ? 'No favourites found' : 'No favourites yet',
+        message: searching
+          ? 'Try a different search term.'
+          : 'Songs you favourite will appear here.',
+        actionLabel: searching ? 'Clear search' : '',
+        action: searching ? () => {
+          searchInput.value = '';
+          state.searchQuery = '';
+          searchClear.classList.add('hidden');
+          renderCurrentView();
+        } : null
+      });
+    } else {
+      renderSongList(tracks, libraryView);
+    }
     return;
   }
 
@@ -294,7 +328,17 @@ function renderCurrentView() {
     libraryView.classList.remove('hidden');
     viewTitle.textContent = 'Playlists';
     viewCount.textContent = `${state.playlists.length} playlists`;
-    renderPlaylists();
+    if (!state.playlists.length) {
+      renderEmptyState(libraryView, {
+        icon: '▤',
+        title: 'No playlists yet',
+        message: 'Create a playlist to keep your favourite songs together.',
+        actionLabel: 'Create playlist',
+        action: () => showPlaylistModal()
+      });
+    } else {
+      renderPlaylists();
+    }
     return;
   }
 
@@ -304,22 +348,82 @@ function renderCurrentView() {
   if (view === 'songs') {
     viewTitle.textContent = 'Songs';
     viewCount.textContent = `${tracks.length} songs`;
-    renderSongList(tracks, libraryView);
+    if (!tracks.length) {
+      renderEmptyState(libraryView, {
+        icon: query ? '⌕' : '♪',
+        title: query ? 'No songs found' : 'Your library is empty',
+        message: query ? 'Try searching by title, artist, album or genre.' : 'Choose a music folder to start building your library.',
+        actionLabel: query ? 'Clear search' : 'Open Music Folder',
+        action: query ? () => {
+          searchInput.value = '';
+          state.searchQuery = '';
+          searchClear.classList.add('hidden');
+          renderCurrentView();
+        } : () => folderBtn.click()
+      });
+    } else {
+      renderSongList(tracks, libraryView);
+    }
   } else if (view === 'albums') {
     const albums = groupBy(tracks, 'album');
     viewTitle.textContent = 'Albums';
     viewCount.textContent = `${Object.keys(albums).length} albums`;
-    renderGrid(albums, 'album', libraryView);
+    if (!Object.keys(albums).length) {
+      renderEmptyState(libraryView, {
+        icon: '◉',
+        title: query ? 'No albums found' : 'No albums yet',
+        message: query ? 'Try a different search term.' : 'Albums will appear here once your library has music.',
+        actionLabel: query ? 'Clear search' : '',
+        action: query ? () => {
+          searchInput.value = '';
+          state.searchQuery = '';
+          searchClear.classList.add('hidden');
+          renderCurrentView();
+        } : null
+      });
+    } else {
+      renderGrid(albums, 'album', libraryView);
+    }
   } else if (view === 'artists') {
     const artists = groupBy(tracks, 'artist');
     viewTitle.textContent = 'Artists';
     viewCount.textContent = `${Object.keys(artists).length} artists`;
-    renderGrid(artists, 'artist', libraryView);
+    if (!Object.keys(artists).length) {
+      renderEmptyState(libraryView, {
+        icon: '●',
+        title: query ? 'No artists found' : 'No artists yet',
+        message: query ? 'Try a different search term.' : 'Artists will appear here once your library has music.',
+        actionLabel: query ? 'Clear search' : '',
+        action: query ? () => {
+          searchInput.value = '';
+          state.searchQuery = '';
+          searchClear.classList.add('hidden');
+          renderCurrentView();
+        } : null
+      });
+    } else {
+      renderGrid(artists, 'artist', libraryView);
+    }
   } else if (view === 'genres') {
     const genres = groupBy(tracks, 'genre');
     viewTitle.textContent = 'Genres';
     viewCount.textContent = `${Object.keys(genres).length} genres`;
-    renderGrid(genres, 'genre', libraryView);
+    if (!Object.keys(genres).length) {
+      renderEmptyState(libraryView, {
+        icon: '≡',
+        title: query ? 'No genres found' : 'No genres yet',
+        message: query ? 'Try a different search term.' : 'Genres will appear here once your library has music.',
+        actionLabel: query ? 'Clear search' : '',
+        action: query ? () => {
+          searchInput.value = '';
+          state.searchQuery = '';
+          searchClear.classList.add('hidden');
+          renderCurrentView();
+        } : null
+      });
+    } else {
+      renderGrid(genres, 'genre', libraryView);
+    }
   }
 
   // Fade animation
