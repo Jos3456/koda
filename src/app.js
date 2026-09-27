@@ -1639,7 +1639,7 @@ function showNowPlayingExpanded() {
     expanded = document.createElement('div');
     expanded.id = 'now-playing-expanded';
     expanded.className = 'hidden';
-    expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn">⤨</button><button id="expanded-prev" class="ctrl-btn">⏮</button><button id="expanded-play" class="expanded-play-btn">▶</button><button id="expanded-next" class="ctrl-btn">⏭</button><button id="expanded-repeat" class="ctrl-btn">↻</button></div><div class="np-expanded-actions"><button id="expanded-heart" class="expanded-action">☆ <span>Favourite</span></button><button id="expanded-menu" class="expanded-action">⋯ <span>More</span></button></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
+    expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn">⤨</button><button id="expanded-prev" class="ctrl-btn">⏮</button><button id="expanded-play" class="expanded-play-btn">▶</button><button id="expanded-next" class="ctrl-btn">⏭</button><button id="expanded-repeat" class="ctrl-btn">↻</button></div><div class="np-expanded-actions" id="expanded-actions"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
     document.body.appendChild(expanded);
     document.getElementById('close-expanded').addEventListener('click', () => expanded.classList.add('hidden'));
     document.getElementById('expanded-prev').addEventListener('click', prevTrack);
@@ -1647,8 +1647,26 @@ function showNowPlayingExpanded() {
     document.getElementById('expanded-play').addEventListener('click', togglePlay);
     document.getElementById('expanded-shuffle').addEventListener('click', () => btnShuffle.click());
     document.getElementById('expanded-repeat').addEventListener('click', () => btnRepeat.click());
-    document.getElementById('expanded-heart').addEventListener('click', () => { if (state.currentTrack) toggleFavourite(state.currentTrack.id); updateExpandedNowPlaying(); });
-    document.getElementById('expanded-menu').addEventListener('click', (e) => { if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack); });
+    const expandedActions = document.getElementById('expanded-actions');
+    const expandedAction = (label, icon, handler, danger = false) => {
+      const btn = document.createElement('button');
+      btn.className = 'expanded-action' + (danger ? ' danger' : '');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', label);
+      btn.dataset.tooltip = label;
+      btn.innerHTML = icon;
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.currentTrack) handler(state.currentTrack);
+      });
+      expandedActions.appendChild(btn);
+    };
+    expandedAction('Favourite', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>', (track) => { toggleFavourite(track.id); updateExpandedNowPlaying(); });
+    expandedAction('Add to playlist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><path d="M8 11h7M8 15h5M19 11v8M15 15h8"/></svg>', showPlaylistPicker);
+    expandedAction('Details', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>', (track) => { const tracks = state.library.filter(t => t.album === track.album); openDetail('album', track.album, tracks); });
+    expandedAction('View artist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', (track) => { const tracks = state.library.filter(t => t.artist === track.artist); openDetail('artist', track.artist, tracks); });
+    expandedAction('View album', '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>', (track) => { const tracks = state.library.filter(t => t.album === track.album); openDetail('album', track.album, tracks); });
+    expandedAction('Delete', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>', (track) => deleteTrack(track), true);
     document.getElementById('expanded-seek').addEventListener('input', (e) => { if (audio.duration) audio.currentTime = (Number(e.target.value) / 100) * audio.duration; });
   }
   updateExpandedNowPlaying();
@@ -1837,43 +1855,17 @@ function bindEvents() {
     if (state.currentTrack) showNowPlayingExpanded();
   });
 
-  // Quick actions on the mini now-playing card.
-  const npActions = document.createElement('div');
-  npActions.className = 'np-actions';
-
-  const npAction = (label, icon, handler, danger = false) => {
-    const btn = document.createElement('button');
-    btn.className = 'np-action-btn' + (danger ? ' danger' : '');
-    btn.type = 'button';
-    btn.setAttribute('aria-label', label);
-    btn.dataset.tooltip = label;
-    btn.innerHTML = icon;
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (state.currentTrack) handler(state.currentTrack, e);
-    });
-    npActions.appendChild(btn);
-  };
-  npAction('Favourite', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>', (track) => {
-    toggleFavourite(track.id);
-    updateHeartButton();
+  const npMenuBtn = document.createElement('button');
+  npMenuBtn.className = 'np-menu-btn';
+  npMenuBtn.type = 'button';
+  npMenuBtn.title = 'More options';
+  npMenuBtn.setAttribute('aria-label', 'More options');
+  npMenuBtn.textContent = '⋯';
+  npCard.appendChild(npMenuBtn);
+  npMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack);
   });
-  npAction('Add to playlist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><path d="M8 11h7M8 15h5M19 11v8M15 15h8"/></svg>', (track) => showPlaylistPicker(track));
-  npAction('Details', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>', (track) => {
-    const tracks = state.library.filter(t => t.album === track.album);
-    openDetail('album', track.album, tracks);
-  });
-  npAction('View artist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', (track) => {
-    const tracks = state.library.filter(t => t.artist === track.artist);
-    openDetail('artist', track.artist, tracks);
-  });
-  npAction('View album', '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>', (track) => {
-    const tracks = state.library.filter(t => t.album === track.album);
-    openDetail('album', track.album, tracks);
-  });
-  npAction('Delete', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>', (track) => deleteTrack(track), true);
-
-  npCard.appendChild(npActions);
 
   // Expanded now-playing button
   const expandBtn = document.createElement('button');
