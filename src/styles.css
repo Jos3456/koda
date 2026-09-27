@@ -1165,12 +1165,12 @@ html, body {
 #player-title.marquee-title {
   overflow: hidden;
   text-overflow: clip;
-  animation: koda-title-marquee 7s linear infinite alternate;
+  animation: koda-title-marquee 7s ease-in-out infinite alternate;
   width: max-content;
   max-width: none;
   padding-right: 28px;
 }
 @keyframes koda-title-marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(min(0px, calc(-100% + 100cqw))); }
+  to { transform: translateX(calc(var(--marquee-distance) * -1)); }
 }
