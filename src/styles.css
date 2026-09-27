@@ -1151,8 +1151,8 @@ html, body {
   padding-right: 28px;
 }
 @keyframes koda-title-marquee {
-  from { transform: translateX(calc(var(--marquee-distance) * -1)); }
-  to { transform: translateX(0); }
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(var(--marquee-distance) * -1)); }
 }
 
 /* ===== KODA 2.0 EXPANDED PLAYER ===== */
