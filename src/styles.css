@@ -1928,3 +1928,64 @@ html, body {
 #now-playing-expanded .np-expanded-actions .expanded-action.active {
   box-shadow: none;
 }
+
+/* ===== LIBRARY EMPTY STATES ===== */
+.koda-empty-state {
+  min-height: min(440px, 58vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+.koda-empty-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+}
+.koda-empty-state h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.koda-empty-state p {
+  max-width: 360px;
+  margin: 9px 0 20px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.koda-empty-action {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+}
+.koda-empty-action:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.koda-empty-action:active {
+  transform: translateY(1px);
+}
