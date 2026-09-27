@@ -457,6 +457,7 @@ function renderSongList(tracks, container) {
       <th>Artist</th>
       <th>Album</th>
       <th class="col-dur">Duration</th>
+      ${state.detailContext?.type === 'playlist' ? '<th class="playlist-row-actions"></th>' : ''}
     </thead>`;
   table.innerHTML = theadHTML;
   const tbody = document.createElement('tbody');
@@ -485,8 +486,21 @@ function renderSongList(tracks, container) {
       <td class="song-artist">${esc(track.artist)}</td>
       <td class="song-album">${esc(track.album)}</td>
       <td class="song-dur">${formatDuration(track.duration)}</td>
+      ${state.detailContext?.type === 'playlist' ? '<td class="playlist-row-actions"><button type="button" class="playlist-remove-song" aria-label="Remove from playlist" title="Remove from playlist">×</button></td>' : ''}
     `;
     tr.innerHTML = rowHTML;
+
+    const removeFromPlaylist = tr.querySelector('.playlist-remove-song');
+    if (removeFromPlaylist) {
+      removeFromPlaylist.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const playlist = state.playlists.find(p => p.id === state.detailContext?.id);
+        if (!playlist) return;
+        playlist.tracks = playlist.tracks.filter(id => id !== track.id);
+        saveSettings();
+        openPlaylist(playlist.id);
+      });
+    }
     tr.addEventListener('click', (e) => {
       if (state.selectionMode && e.target.type !== 'checkbox') {
         const cb = tr.querySelector('.song-checkbox');
@@ -795,34 +809,56 @@ function openPlaylist(playlistId) {
     </div>
   `;
 
-  // Add Songs button
-  const addButton = document.createElement('button');
-  addButton.textContent = '+ Add Songs';
-  addButton.className = 'add-songs-btn';
-  addButton.style.marginLeft = 'auto';
-  addButton.style.padding = '6px 12px';
-  addButton.style.background = 'var(--accent)';
-  addButton.style.border = 'none';
-  addButton.style.borderRadius = '20px';
-  addButton.style.cursor = 'pointer';
-  addButton.style.color = '#111';
-  addButton.style.fontWeight = '600';
-  addButton.addEventListener('click', () => showAddSongsModal(playlistId));
-  detailHeader.appendChild(addButton);
+  // Playlist actions
+  const actions = document.createElement('div');
+  actions.className = 'playlist-detail-actions';
+  actions.style.marginLeft = 'auto';
+  actions.style.display = 'flex';
+  actions.style.alignItems = 'center';
+  actions.style.gap = '6px';
 
-  // Delete playlist button
-  const delPlaylistBtn = document.createElement('button');
-  delPlaylistBtn.innerHTML = '🗑️ Delete Playlist';
-  delPlaylistBtn.className = 'delete-playlist-btn';
-  delPlaylistBtn.style.marginLeft = '12px';
-  delPlaylistBtn.style.padding = '6px 12px';
-  delPlaylistBtn.style.background = 'var(--surface)';
-  delPlaylistBtn.style.border = '1px solid var(--border)';
-  delPlaylistBtn.style.borderRadius = '20px';
-  delPlaylistBtn.style.cursor = 'pointer';
-  delPlaylistBtn.style.color = 'var(--text-secondary)';
-  delPlaylistBtn.addEventListener('click', () => deletePlaylist(playlistId));
-  detailHeader.appendChild(delPlaylistBtn);
+  const makeAction = (label, onClick, primary = false) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.style.padding = '7px 12px';
+    button.style.borderRadius = '18px';
+    button.style.border = primary ? '0' : '1px solid var(--border)';
+    button.style.background = primary ? 'var(--accent)' : 'var(--surface)';
+    button.style.color = primary ? '#111' : 'var(--text-primary)';
+    button.style.cursor = 'pointer';
+    button.style.fontFamily = 'var(--font-ui)';
+    button.style.fontSize = '11px';
+    button.style.fontWeight = primary ? '600' : '500';
+    button.addEventListener('click', onClick);
+    return button;
+  };
+
+  const playButton = makeAction('Play All', () => {
+    if (tracks.length) playFromList(tracks, 0);
+  }, true);
+  if (!tracks.length) { playButton.disabled = true; playButton.style.opacity = '.45'; }
+  actions.appendChild(playButton);
+
+  const shuffleButton = makeAction('Shuffle', () => {
+    if (!tracks.length) return;
+    playFromList(tracks, Math.floor(Math.random() * tracks.length));
+  });
+  if (!tracks.length) { shuffleButton.disabled = true; shuffleButton.style.opacity = '.45'; }
+  actions.appendChild(shuffleButton);
+
+  actions.appendChild(makeAction('+ Add Songs', () => showAddSongsModal(playlistId)));
+  actions.appendChild(makeAction('Rename', () => {
+    const nextName = window.prompt('Rename playlist', playlist.name);
+    if (!nextName) return;
+    const trimmed = nextName.trim();
+    if (!trimmed || trimmed === playlist.name) return;
+    playlist.name = trimmed;
+    saveSettings();
+    openPlaylist(playlistId);
+  }));
+  actions.appendChild(makeAction('Delete', () => deletePlaylist(playlistId)));
+  detailHeader.appendChild(actions);
 
   renderSongList(tracks, detailTracks);
   detailView.classList.add('view-fade');
