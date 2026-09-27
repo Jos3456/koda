@@ -813,8 +813,19 @@ document.getElementById('confirm-add-songs').addEventListener('click', () => {
 
 // ——— PLAYBACK ———
 function playFromList(tracks, idx) {
-  state.queue = [...tracks];
-  state.queueIndex = idx;
+  const selected = tracks[idx];
+  if (state.shuffle) {
+    const remaining = tracks.filter((_, i) => i !== idx);
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    }
+    state.queue = [selected, ...remaining];
+    state.queueIndex = 0;
+  } else {
+    state.queue = [...tracks];
+    state.queueIndex = idx;
+  }
   playCurrentQueueItem();
 }
 
@@ -918,6 +929,7 @@ audio.addEventListener('ended', () => {
 });
 
 audio.addEventListener('timeupdate', () => {
+  updateExpandedNowPlaying();
   const cur = audio.currentTime;
   const dur = audio.duration || 0;
   timeCurrent.textContent = formatDuration(cur);
@@ -943,12 +955,7 @@ function handleTrackEnd() {
     return;
   }
 
-  let nextIdx;
-  if (state.shuffle) {
-    nextIdx = Math.floor(Math.random() * state.queue.length);
-  } else {
-    nextIdx = state.queueIndex + 1;
-  }
+  const nextIdx = state.queueIndex + 1;
 
   if (nextIdx >= state.queue.length) {
     if (state.repeatMode === 'all') {
@@ -977,13 +984,9 @@ function prevTrack() {
 }
 
 function nextTrack() {
-  let idx;
-  if (state.shuffle) {
-    idx = Math.floor(Math.random() * state.queue.length);
-  } else {
-    idx = state.queueIndex + 1;
-    if (idx >= state.queue.length) idx = 0;
-  }
+  if (!state.queue.length) return;
+  let idx = state.queueIndex + 1;
+  if (idx >= state.queue.length) idx = 0;
   state.queueIndex = idx;
   playCurrentQueueItem();
 }
@@ -1023,6 +1026,16 @@ $('btn-mute').addEventListener('click', () => {
 
 btnShuffle.addEventListener('click', () => {
   state.shuffle = !state.shuffle;
+  if (state.currentTrack && state.queue.length && state.shuffle) {
+    const remaining = state.queue.filter(t => t.id !== state.currentTrack.id);
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    }
+    state.queue = [state.currentTrack, ...remaining];
+    state.queueIndex = 0;
+    renderQueueList();
+  }
   updateShuffleBtn();
   saveSettings();
 });
@@ -1590,38 +1603,58 @@ function showNowPlayingExpanded() {
     expanded = document.createElement('div');
     expanded.id = 'now-playing-expanded';
     expanded.className = 'hidden';
-    expanded.innerHTML = `
-      <div class="np-expanded-content">
-        <img id="expanded-art" class="np-expanded-art" src="">
-        <div class="np-expanded-title" id="expanded-title"></div>
-        <div class="np-expanded-artist" id="expanded-artist"></div>
-        <div style="margin-top: 20px;">
-          <button id="expanded-prev" class="ctrl-btn">⏮</button>
-          <button id="expanded-play" class="ctrl-btn">▶</button>
-          <button id="expanded-next" class="ctrl-btn">⏭</button>
-        </div>
-      </div>
-      <button id="close-expanded">✕</button>
-    `;
+    expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn">⤨</button><button id="expanded-prev" class="ctrl-btn">⏮</button><button id="expanded-play" class="expanded-play-btn">▶</button><button id="expanded-next" class="ctrl-btn">⏭</button><button id="expanded-repeat" class="ctrl-btn">↻</button></div><div class="np-expanded-actions"><button id="expanded-heart" class="expanded-action">☆ <span>Favourite</span></button><button id="expanded-menu" class="expanded-action">⋯ <span>More</span></button></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
     document.body.appendChild(expanded);
-    document.getElementById('close-expanded').addEventListener('click', () => {
-      expanded.classList.add('hidden');
-    });
+    document.getElementById('close-expanded').addEventListener('click', () => expanded.classList.add('hidden'));
     document.getElementById('expanded-prev').addEventListener('click', prevTrack);
     document.getElementById('expanded-next').addEventListener('click', nextTrack);
     document.getElementById('expanded-play').addEventListener('click', togglePlay);
+    document.getElementById('expanded-shuffle').addEventListener('click', () => btnShuffle.click());
+    document.getElementById('expanded-repeat').addEventListener('click', () => btnRepeat.click());
+    document.getElementById('expanded-heart').addEventListener('click', () => { if (state.currentTrack) toggleFavourite(state.currentTrack.id); updateExpandedNowPlaying(); });
+    document.getElementById('expanded-menu').addEventListener('click', (e) => { if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack); });
+    document.getElementById('expanded-seek').addEventListener('input', (e) => { if (audio.duration) audio.currentTime = (Number(e.target.value) / 100) * audio.duration; });
   }
-  const expandedArt = document.getElementById('expanded-art');
-  const expandedTitle = document.getElementById('expanded-title');
-  const expandedArtist = document.getElementById('expanded-artist');
-  if (state.currentTrack) {
-    expandedArt.src = state.currentTrack.art || '';
-    expandedTitle.textContent = state.currentTrack.title;
-    expandedArtist.textContent = state.currentTrack.artist;
-  }
+  updateExpandedNowPlaying();
   expanded.classList.remove('hidden');
 }
 
+function updateExpandedNowPlaying() {
+  const expanded = document.getElementById('now-playing-expanded');
+  if (!expanded || !state.currentTrack) return;
+  const track = state.currentTrack;
+  document.getElementById('expanded-art').src = track.art || '';
+  document.getElementById('expanded-backdrop').style.backgroundImage = track.art ? 'url("' + track.art + '")' : '';
+  document.getElementById('expanded-title').textContent = track.title || '—';
+  document.getElementById('expanded-artist').textContent = track.artist || '—';
+  document.getElementById('expanded-album').textContent = track.album || '';
+  document.getElementById('expanded-current').textContent = formatDuration(audio.currentTime || 0);
+  document.getElementById('expanded-total').textContent = formatDuration(audio.duration || track.duration || 0);
+  document.getElementById('expanded-seek').value = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  document.getElementById('expanded-play').textContent = state.isPlaying ? 'Ⅱ' : '▶';
+  document.getElementById('expanded-shuffle').classList.toggle('active', state.shuffle);
+  document.getElementById('expanded-repeat').classList.toggle('active', state.repeatMode !== 'none');
+  const heart = document.getElementById('expanded-heart');
+  const fav = state.favourites.has(track.id);
+  heart.classList.toggle('active', fav);
+  heart.firstChild.textContent = fav ? '★ ' : '☆ ';
+  const queue = document.getElementById('expanded-queue'); queue.innerHTML = '';
+  state.queue.slice(state.queueIndex + 1).forEach((t, i) => {
+    const row = document.createElement('button'); row.className = 'np-expanded-list-item';
+    row.innerHTML = '<span class="np-list-index">' + (i + 1) + '</span><span class="np-list-text"><strong>' + esc(t.title) + '</strong><small>' + esc(t.artist) + '</small></span>';
+    row.addEventListener('click', () => { const idx = state.queue.findIndex(q => q.id === t.id); if (idx >= 0) { state.queueIndex = idx; playCurrentQueueItem(); updateExpandedNowPlaying(); } });
+    queue.appendChild(row);
+  });
+  if (!queue.children.length) queue.innerHTML = '<div class="np-empty">Nothing queued</div>';
+  const related = document.getElementById('expanded-related'); related.innerHTML = '';
+  state.library.filter(t => t.album === track.album && t.id !== track.id).slice(0, 12).forEach(t => {
+    const row = document.createElement('button'); row.className = 'np-expanded-list-item';
+    row.innerHTML = '<span class="np-list-art">' + (t.art ? '<img src="' + t.art + '" alt="">' : '♪') + '</span><span class="np-list-text"><strong>' + esc(t.title) + '</strong><small>' + esc(t.artist) + '</small></span>';
+    row.addEventListener('click', () => { const tracks = state.library.filter(x => x.album === t.album); playFromList(tracks, tracks.findIndex(x => x.id === t.id)); updateExpandedNowPlaying(); });
+    related.appendChild(row);
+  });
+  if (!related.children.length) related.innerHTML = '<div class="np-empty">No other songs from this album</div>';
+}
 function toggleLightTheme() {
   state.lightTheme = !state.lightTheme;
   if (state.lightTheme) document.body.classList.add('light');
