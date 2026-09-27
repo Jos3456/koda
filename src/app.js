@@ -848,21 +848,64 @@ function openPlaylist(playlistId) {
   actions.appendChild(shuffleButton);
 
   actions.appendChild(makeAction('+ Add Songs', () => showAddSongsModal(playlistId)));
-  actions.appendChild(makeAction('Rename', () => {
-    const nextName = window.prompt('Rename playlist', playlist.name);
-    if (!nextName) return;
-    const trimmed = nextName.trim();
-    if (!trimmed || trimmed === playlist.name) return;
-    playlist.name = trimmed;
-    saveSettings();
-    openPlaylist(playlistId);
-  }));
+  actions.appendChild(makeAction('Rename', () => showRenamePlaylistModal(playlistId)));
   actions.appendChild(makeAction('Delete', () => deletePlaylist(playlistId)));
   detailHeader.appendChild(actions);
 
   renderSongList(tracks, detailTracks);
   detailView.classList.add('view-fade');
   setTimeout(() => detailView.classList.remove('view-fade'), 200);
+}
+
+function showRenamePlaylistModal(playlistId) {
+  const playlist = state.playlists.find(p => p.id === playlistId);
+  if (!playlist) return;
+
+  document.querySelectorAll('#rename-playlist-modal').forEach(el => el.remove());
+
+  const modal = document.createElement('div');
+  modal.id = 'rename-playlist-modal';
+  modal.innerHTML = `
+    <div class="rename-playlist-card" role="dialog" aria-modal="true" aria-labelledby="rename-playlist-title">
+      <h3 id="rename-playlist-title">Rename Playlist</h3>
+      <input class="rename-playlist-input" type="text" value="${esc(playlist.name)}" maxlength="120" autocomplete="off">
+      <div class="rename-playlist-actions">
+        <button type="button" class="rename-playlist-cancel">Cancel</button>
+        <button type="button" class="rename-playlist-save">Save</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  const input = modal.querySelector('.rename-playlist-input');
+  const close = () => modal.remove();
+
+  const save = () => {
+    const nextName = input.value.trim();
+    if (!nextName) {
+      input.focus();
+      return;
+    }
+    playlist.name = nextName;
+    saveSettings();
+    close();
+    openPlaylist(playlistId);
+  };
+
+  modal.querySelector('.rename-playlist-cancel').addEventListener('click', close);
+  modal.querySelector('.rename-playlist-save').addEventListener('click', save);
+  modal.addEventListener('click', e => {
+    if (e.target === modal) close();
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') save();
+    if (e.key === 'Escape') close();
+  });
+
+  requestAnimationFrame(() => {
+    input.focus();
+    input.select();
+  });
 }
 
 function deletePlaylist(playlistId) {
