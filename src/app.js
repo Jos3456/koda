@@ -831,8 +831,11 @@ function loadTrack(track) {
 
   playerTitle.textContent = track.title || '—';
   playerTitle.classList.remove('marquee-title');
+  playerTitle.style.removeProperty('--marquee-distance');
   requestAnimationFrame(() => {
-    if (playerTitle.scrollWidth > playerTitle.clientWidth) {
+    const overflow = playerTitle.scrollWidth - playerTitle.clientWidth;
+    if (overflow > 8) {
+      playerTitle.style.setProperty('--marquee-distance', `${overflow}px`);
       playerTitle.classList.add('marquee-title');
     }
   });
