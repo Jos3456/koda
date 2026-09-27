@@ -1812,3 +1812,119 @@ html, body {
   font-family: var(--font-display);
   font-size: 14px;
 }
+
+
+/* ===== EXPANDED PLAYER MINIMAL CONTROLS ===== */
+#now-playing-expanded .np-expanded-controls .ctrl-btn {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+#now-playing-expanded .np-expanded-controls .ctrl-btn:hover {
+  background: transparent;
+  color: var(--text-primary);
+  transform: scale(1.08);
+}
+#now-playing-expanded .np-expanded-controls .ctrl-btn.active {
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+}
+#now-playing-expanded .np-expanded-controls .ctrl-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#now-playing-expanded .expanded-play-btn svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+  stroke: none;
+}
+#now-playing-expanded .expanded-play-btn.is-playing svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* The progress track stays clean; no outer input border/outline. */
+#now-playing-expanded #expanded-seek {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+#now-playing-expanded #expanded-seek:focus {
+  outline: none;
+  box-shadow: none;
+}
+#now-playing-expanded #expanded-seek::-webkit-slider-runnable-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+#now-playing-expanded #expanded-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+#now-playing-expanded #expanded-seek::-moz-range-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+#now-playing-expanded #expanded-seek::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+/* Let long NPV titles scroll instead of being permanently truncated. */
+#now-playing-expanded .np-expanded-meta {
+  min-width: 0;
+  overflow: hidden;
+}
+#now-playing-expanded .np-expanded-title {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+#now-playing-expanded .np-expanded-title.marquee-title {
+  width: max-content;
+  max-width: none;
+  padding-right: 28px;
+  animation: koda-title-marquee 7s ease-in-out infinite alternate;
+}
+
+/* Secondary song actions should read as minimal icon controls too. */
+#now-playing-expanded .np-expanded-actions .expanded-action {
+  border: 0;
+  background: transparent;
+}
+#now-playing-expanded .np-expanded-actions .expanded-action:hover,
+#now-playing-expanded .np-expanded-actions .expanded-action.active {
+  background: transparent;
+}
+#now-playing-expanded .np-expanded-actions .expanded-action.active {
+  box-shadow: none;
+}
