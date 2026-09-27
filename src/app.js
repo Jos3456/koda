@@ -933,6 +933,7 @@ audio.addEventListener('play', () => {
   iconPause.classList.remove('hidden');
   artGlow.style.opacity = '0.4';
   updateActiveRows();
+  updateExpandedNowPlaying();
 });
 
 audio.addEventListener('pause', () => {
@@ -941,6 +942,7 @@ audio.addEventListener('pause', () => {
   iconPause.classList.add('hidden');
   artGlow.style.opacity = '0';
   updateActiveRows();
+  updateExpandedNowPlaying();
 });
 
 audio.addEventListener('ended', () => {
@@ -1703,7 +1705,7 @@ function showNowPlayingExpanded() {
     expanded = document.createElement('div');
     expanded.id = 'now-playing-expanded';
     expanded.className = 'hidden';
-    expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn">⤨</button><button id="expanded-prev" class="ctrl-btn">⏮</button><button id="expanded-play" class="expanded-play-btn">▶</button><button id="expanded-next" class="ctrl-btn">⏭</button><button id="expanded-repeat" class="ctrl-btn">↻</button></div><div class="np-expanded-actions" id="expanded-actions"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
+    expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn" aria-label="Shuffle" title="Shuffle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h3c4 0 6 10 10 10h5"/><path d="m18 14 3 3-3 3"/><path d="M3 17h3c1.7 0 2.9-1.1 4-2.5M14 9.5C15.1 7.9 16.3 7 18 7h3"/><path d="m18 4 3 3-3 3"/></svg></button><button id="expanded-prev" class="ctrl-btn" aria-label="Previous" title="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14"/><path d="m18 6-8 6 8 6z"/></svg></button><button id="expanded-play" class="expanded-play-btn" aria-label="Play" title="Play"></button><button id="expanded-next" class="ctrl-btn" aria-label="Next" title="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 8 6-8 6z"/><path d="M18 5v14"/></svg></button><button id="expanded-repeat" class="ctrl-btn" aria-label="Repeat" title="Repeat: Off"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3l4 4-4 4"/><path d="M3 7h14a4 4 0 0 1 4 4v0"/><path d="m7 21-4-4 4-4"/><path d="M21 17H7a4 4 0 0 1-4-4v0"/></svg></button></div><div class="np-expanded-actions" id="expanded-actions"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
     document.body.appendChild(expanded);
     const closeExpanded = () => expanded.classList.add('hidden');
     document.getElementById('close-expanded').addEventListener('click', closeExpanded);
@@ -1791,15 +1793,32 @@ function updateExpandedNowPlaying() {
     expandedArtWrap.classList.add('no-art');
     document.getElementById('expanded-backdrop').style.backgroundImage = '';
   }
-  document.getElementById('expanded-title').textContent = track.title || '—';
+  const expandedTitle = document.getElementById('expanded-title');
+  expandedTitle.textContent = track.title || '—';
+  expandedTitle.classList.remove('marquee-title');
+  expandedTitle.style.removeProperty('--marquee-distance');
+  requestAnimationFrame(() => {
+    if (!expandedTitle.isConnected) return;
+    const overflow = expandedTitle.scrollWidth - expandedTitle.clientWidth;
+    if (overflow > 8) {
+      expandedTitle.style.setProperty('--marquee-distance', `${overflow}px`);
+      expandedTitle.classList.add('marquee-title');
+    }
+  });
   document.getElementById('expanded-artist').textContent = track.artist || '—';
   document.getElementById('expanded-album').textContent = track.album || '';
   document.getElementById('expanded-current').textContent = formatDuration(audio.currentTime || 0);
   document.getElementById('expanded-total').textContent = formatDuration(audio.duration || track.duration || 0);
   document.getElementById('expanded-seek').value = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
   const expandedPlay = document.getElementById('expanded-play');
-  expandedPlay.textContent = state.isPlaying ? 'Ⅱ' : '▶';
-  expandedPlay.classList.toggle('is-playing', state.isPlaying);
+  if (expandedPlay) {
+    expandedPlay.innerHTML = state.isPlaying
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M17 5v14"/></svg>'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>';
+    expandedPlay.setAttribute('aria-label', state.isPlaying ? 'Pause' : 'Play');
+    expandedPlay.title = state.isPlaying ? 'Pause' : 'Play';
+    expandedPlay.classList.toggle('is-playing', state.isPlaying);
+  }
   document.getElementById('expanded-shuffle').classList.toggle('active', state.shuffle);
   document.getElementById('expanded-repeat').classList.toggle('active', state.repeatMode !== 'none');
   const heart = document.querySelector('.expanded-action[aria-label="Favourite"]');
