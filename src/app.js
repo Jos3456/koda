@@ -1906,6 +1906,17 @@ function bindEvents() {
   $('window-controls').insertBefore(settingsBtn, $('btn-min'));
   settingsBtn.addEventListener('click', () => settingsOverlay.classList.remove('hidden'));
 
+  const aboutOverlay = $('about-overlay');
+  const closeAbout = () => aboutOverlay.classList.add('hidden');
+  $('about-btn').addEventListener('click', () => aboutOverlay.classList.remove('hidden'));
+  $('about-close').addEventListener('click', closeAbout);
+  aboutOverlay.addEventListener('click', (e) => {
+    if (e.target === aboutOverlay) closeAbout();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !aboutOverlay.classList.contains('hidden')) closeAbout();
+  });
+
   $('settings-close').addEventListener('click', () => settingsOverlay.classList.add('hidden'));
   settingsOverlay.addEventListener('click', (e) => {
     if (e.target === settingsOverlay) settingsOverlay.classList.add('hidden');
