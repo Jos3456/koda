@@ -1,0 +1,18 @@
+#search-wrap { padding-right: 8px; }
+.search-clear {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: 16px/18px var(--font-ui);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition), background var(--transition);
+}
+.search-clear:hover { color: var(--text-primary); background: var(--border-2); }
+.search-clear.hidden { display: none; }
