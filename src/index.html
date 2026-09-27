@@ -37,6 +37,15 @@
 
   <!-- LEFT SIDEBAR: Nav + Now Playing -->
   <aside id="sidebar">
+    <div id="sidebar-brand">
+      <div id="sidebar-brand-mark">K</div>
+      <div id="sidebar-brand-copy">
+        <strong>Koda</strong>
+        <span>Music library</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Library</div>
     <nav id="nav">
       <button class="nav-btn active" data-view="songs">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -78,7 +87,12 @@
       </div>
     </div>
 
-    <button id="folder-btn">
+    <div id="sidebar-footer">
+      <button id="about-btn" class="sidebar-footer-btn" type="button">
+        <span class="sidebar-footer-icon">i</span>
+        About Koda
+      </button>
+      <button id="folder-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       Change Folder
     </button>
@@ -218,6 +232,26 @@
       <div id="queue-list" class="hidden"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- About modal -->
+<div id="about-overlay" class="hidden">
+  <div id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <button id="about-close" class="about-close" type="button" aria-label="Close About">✕</button>
+    <div class="about-mark" aria-hidden="true">K</div>
+    <div class="about-kicker">KODA</div>
+    <h2 id="about-title">Music, without the noise.</h2>
+    <p class="about-description">
+      Koda is a clean, offline music player built around your own library.
+      Your music stays yours.
+    </p>
+    <div class="about-meta">
+      <div><span>Version</span><strong>1.0.0</strong></div>
+      <div><span>Made for</span><strong>Desktop</strong></div>
+      <div><span>License</span><strong>MIT</strong></div>
+    </div>
+    <div class="about-footer">Koda — your library, your way.</div>
   </div>
 </div>
 
