@@ -123,7 +123,6 @@ async function init() {
   updateRepeatBtn();
   updateHeartButton();
   addHeartButton();
-  initResize();
   initMediaSession();
 }
 
