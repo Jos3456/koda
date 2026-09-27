@@ -1580,16 +1580,14 @@ function showNowPlayingMenu(e, track) {
   addOption('Delete from disk', () => deleteTrack(track), true);
 
   requestAnimationFrame(() => {
-    const rect = npCard.getBoundingClientRect();
+    const rect = e.currentTarget?.getBoundingClientRect?.() || npCard.getBoundingClientRect();
     const menuRect = contextMenu.getBoundingClientRect();
     const margin = 8;
-    let left = rect.left;
-    let top = rect.top - menuRect.height - margin;
-
-    // Keep the full menu inside the viewport.
+    let left = rect.right - menuRect.width;
+    let top = rect.bottom + margin;
+    if (top + menuRect.height > window.innerHeight - margin) top = rect.top - menuRect.height - margin;
     left = Math.max(margin, Math.min(left, window.innerWidth - menuRect.width - margin));
-    if (top < margin) top = Math.min(window.innerHeight - menuRect.height - margin, rect.bottom + margin);
-
+    top = Math.max(margin, Math.min(top, window.innerHeight - menuRect.height - margin));
     contextMenu.style.left = `${left}px`;
     contextMenu.style.top = `${top}px`;
   });
