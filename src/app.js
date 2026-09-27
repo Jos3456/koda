@@ -1701,10 +1701,9 @@ function updateExpandedNowPlaying() {
   document.getElementById('expanded-play').textContent = state.isPlaying ? 'Ⅱ' : '▶';
   document.getElementById('expanded-shuffle').classList.toggle('active', state.shuffle);
   document.getElementById('expanded-repeat').classList.toggle('active', state.repeatMode !== 'none');
-  const heart = document.getElementById('expanded-heart');
+  const heart = document.querySelector('.expanded-action[aria-label="Favourite"]');
   const fav = state.favourites.has(track.id);
-  heart.classList.toggle('active', fav);
-  heart.firstChild.textContent = fav ? '★ ' : '☆ ';
+  if (heart) heart.classList.toggle('active', fav);
   const queue = document.getElementById('expanded-queue'); queue.innerHTML = '';
   state.queue.slice(state.queueIndex + 1).forEach((t, i) => {
     const row = document.createElement('button'); row.className = 'np-expanded-list-item';
