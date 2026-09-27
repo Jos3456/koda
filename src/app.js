@@ -1075,6 +1075,15 @@ function updateShuffleBtn() {
 
 function updateRepeatBtn() {
   btnRepeat.classList.toggle('active', state.repeatMode !== 'none');
+  const expandedRepeat = document.getElementById('expanded-repeat');
+  if (expandedRepeat) {
+    expandedRepeat.classList.toggle('active', state.repeatMode !== 'none');
+    expandedRepeat.title = state.repeatMode === 'one'
+      ? 'Repeat: One'
+      : state.repeatMode === 'all'
+        ? 'Repeat: All'
+        : 'Repeat: Off';
+  }
   if (state.repeatMode === 'one') {
     btnRepeat.title = 'Repeat: One';
     btnRepeat.style.position = 'relative';
@@ -1696,12 +1705,49 @@ function showNowPlayingExpanded() {
     expanded.className = 'hidden';
     expanded.innerHTML = '<div class="np-expanded-backdrop" id="expanded-backdrop"></div><button id="close-expanded" aria-label="Close now playing">✕</button><div class="np-expanded-content"><section class="np-expanded-main"><div class="np-expanded-art-wrap"><img id="expanded-art" class="np-expanded-art" src="" alt=""></div><div class="np-expanded-meta"><div class="np-expanded-kicker">NOW PLAYING</div><div class="np-expanded-title" id="expanded-title"></div><div class="np-expanded-artist" id="expanded-artist"></div><div class="np-expanded-album" id="expanded-album"></div></div><div class="np-expanded-progress"><span id="expanded-current">0:00</span><input id="expanded-seek" type="range" min="0" max="100" value="0" step="0.1"><span id="expanded-total">0:00</span></div><div class="np-expanded-controls"><button id="expanded-shuffle" class="ctrl-btn">⤨</button><button id="expanded-prev" class="ctrl-btn">⏮</button><button id="expanded-play" class="expanded-play-btn">▶</button><button id="expanded-next" class="ctrl-btn">⏭</button><button id="expanded-repeat" class="ctrl-btn">↻</button></div><div class="np-expanded-actions" id="expanded-actions"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">UP NEXT</div><div id="expanded-queue" class="np-expanded-list"></div></section><section class="np-expanded-column"><div class="np-expanded-section-title">FROM THIS ALBUM</div><div id="expanded-related" class="np-expanded-list"></div></section></div>';
     document.body.appendChild(expanded);
-    document.getElementById('close-expanded').addEventListener('click', () => expanded.classList.add('hidden'));
-    document.getElementById('expanded-prev').addEventListener('click', prevTrack);
-    document.getElementById('expanded-next').addEventListener('click', nextTrack);
-    document.getElementById('expanded-play').addEventListener('click', togglePlay);
-    document.getElementById('expanded-shuffle').addEventListener('click', () => btnShuffle.click());
-    document.getElementById('expanded-repeat').addEventListener('click', () => btnRepeat.click());
+    const closeExpanded = () => expanded.classList.add('hidden');
+    document.getElementById('close-expanded').addEventListener('click', closeExpanded);
+    document.getElementById('expanded-backdrop').addEventListener('click', closeExpanded);
+    expanded.addEventListener('click', (e) => {
+      // Clicking the overlay itself/backdrop closes NPV; clicks inside the
+      // actual content are left alone.
+      if (e.target === expanded) closeExpanded();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !expanded.classList.contains('hidden')) closeExpanded();
+    });
+    document.getElementById('expanded-prev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      prevTrack();
+    });
+    document.getElementById('expanded-next').addEventListener('click', (e) => {
+      e.stopPropagation();
+      nextTrack();
+    });
+    document.getElementById('expanded-play').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!state.currentTrack) return;
+      if (audio.paused) {
+        try {
+          await audio.play();
+        } catch (err) {
+          console.error('Expanded play failed:', err);
+        }
+      } else {
+        audio.pause();
+      }
+      updateExpandedNowPlaying();
+    });
+    document.getElementById('expanded-shuffle').addEventListener('click', (e) => {
+      e.stopPropagation();
+      btnShuffle.click();
+      updateExpandedNowPlaying();
+    });
+    document.getElementById('expanded-repeat').addEventListener('click', (e) => {
+      e.stopPropagation();
+      btnRepeat.click();
+      updateExpandedNowPlaying();
+    });
     const expandedActions = document.getElementById('expanded-actions');
     const expandedAction = (label, icon, handler, danger = false) => {
       const btn = document.createElement('button');
