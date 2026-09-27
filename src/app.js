@@ -1877,7 +1877,11 @@ function bindEvents() {
   expandBtn.style.cursor = 'pointer';
   expandBtn.style.marginLeft = '8px';
   expandBtn.style.color = 'var(--text-secondary)';
-  expandBtn.addEventListener('click', showNowPlayingExpanded);
+  expandBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showNowPlayingExpanded();
+  });
   $('player-info').appendChild(expandBtn);
 
   document.addEventListener('keydown', (e) => {
