@@ -720,11 +720,11 @@ function openDetail(type, name, tracks) {
 }
 
 // ——— PLAYLISTS ———
-function renderPlaylists() {
+function renderPlaylists(playlists = state.playlists) {
   libraryView.innerHTML = '';
   const container = document.createElement('div');
   container.className = 'grid-view';
-  for (const pl of state.playlists) {
+  for (const pl of playlists) {
     const card = document.createElement('div');
     card.className = 'playlist-card';
     card.dataset.id = pl.id;
