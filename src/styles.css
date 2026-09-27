@@ -1128,69 +1128,22 @@ html, body {
 
 #now-playing-card { position: relative; cursor: pointer; }
 #now-playing-card:hover { background: var(--surface-2); }
-.np-actions {
-  margin-left: auto;
-  align-self: center;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-  padding-left: 4px;
-}
-.np-action-btn {
-  position: relative;
+.np-menu-btn {
   width: 28px;
   height: 28px;
-  padding: 0;
+  margin-left: auto;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
-.np-action-btn svg {
-  width: 15px;
-  height: 15px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.np-action-btn:hover { color: var(--text-primary); background: var(--surface-2); }
-.np-action-btn.danger:hover { color: #e84444; }
-.np-action-btn::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 8px);
-  z-index: 10001;
-  width: max-content;
-  max-width: 150px;
-  padding: 5px 8px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-2);
-  color: var(--text-primary);
-  box-shadow: 0 6px 18px rgba(0,0,0,.25);
-  font-size: 10px;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  line-height: 1.2;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(3px);
-  transition: opacity .12s ease, transform .12s ease;
-}
-.np-action-btn:hover::after,
-.np-action-btn:focus-visible::after {
-  opacity: 1;
-  transform: translateY(0);
-}
+.np-menu-btn:hover { color: var(--text-primary); background: var(--surface-2); }
 
 #player-title.marquee-title {
   overflow: hidden;
@@ -1262,9 +1215,51 @@ html, body {
 #now-playing-expanded .ctrl-btn { width:44px; height:44px; font-size:18px; background:var(--surface); }
 #now-playing-expanded .ctrl-btn:hover { background:var(--surface-2); transform:scale(1.05); }
 .expanded-play-btn { width:58px; height:58px; border:0; border-radius:50%; background:var(--text-primary); color:var(--bg); font-size:21px; cursor:pointer; }
-.np-expanded-actions { display:flex; justify-content:center; gap:10px; margin-top:18px; }
-.expanded-action { border:1px solid var(--border); background:var(--surface); color:var(--text-secondary); border-radius:20px; padding:8px 13px; cursor:pointer; }
+.np-expanded-actions { display:flex; justify-content:center; align-items:center; gap:6px; margin-top:18px; }
+.expanded-action {
+  position:relative;
+  width:38px;
+  height:38px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-secondary);
+  border-radius:50%;
+  padding:0;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.expanded-action svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 .expanded-action:hover,.expanded-action.active { color:var(--accent); background:var(--accent-dim); }
+.expanded-action.danger:hover { color:#e84444; }
+.expanded-action::after {
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translate(-50%, 3px);
+  z-index:10001;
+  width:max-content;
+  max-width:140px;
+  padding:5px 8px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--bg-2);
+  color:var(--text-primary);
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+  font-size:10px;
+  font-family:var(--font-ui);
+  font-weight:500;
+  line-height:1.2;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .12s ease, transform .12s ease;
+}
+.expanded-action:hover::after,.expanded-action:focus-visible::after {
+  opacity:1;
+  transform:translate(-50%, 0);
+}
 .np-expanded-section-title { font-size:10px; letter-spacing:1.5px; color:var(--text-muted); margin-bottom:12px; }
 .np-expanded-list { min-height:0; overflow-y:auto; padding-right:5px; }
 .np-expanded-list-item { width:100%; display:flex; align-items:center; gap:10px; padding:9px 8px; border:0; border-radius:10px; background:transparent; color:var(--text-primary); text-align:left; cursor:pointer; }
