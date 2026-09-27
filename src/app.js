@@ -1606,18 +1606,27 @@ function showNowPlayingMenu(e, track) {
     const menuRect = contextMenu.getBoundingClientRect();
     const margin = 8;
 
-    // Keep the menu centered directly above the button. Only fall back below
-    // when there is literally not enough vertical room above it.
-    let left = anchorRect.left + (anchorRect.width - menuRect.width) / 2;
-    let top = anchorRect.top - menuRect.height - margin;
+    // Prefer opening upward from the anchor (especially the sidebar mini-card),
+    // then use below, and finally clamp within the viewport.
+    const spaceAbove = anchorRect.top - margin;
+    const spaceBelow = window.innerHeight - anchorRect.bottom - margin;
+    const fitsAbove = menuRect.height <= spaceAbove;
+    const fitsBelow = menuRect.height <= spaceBelow;
 
-    if (top < margin) {
+    let left = anchorRect.left + (anchorRect.width - menuRect.width) / 2;
+    let top;
+
+    if (fitsAbove || !fitsBelow) {
+      top = anchorRect.top - menuRect.height - margin;
+    } else {
       top = anchorRect.bottom + margin;
     }
 
     left = Math.max(margin, Math.min(left, window.innerWidth - menuRect.width - margin));
     top = Math.max(margin, Math.min(top, window.innerHeight - menuRect.height - margin));
 
+    contextMenu.style.maxHeight = 'calc(100vh - 16px)';
+    contextMenu.style.overflowY = menuRect.height > window.innerHeight - 16 ? 'auto' : '';
     contextMenu.style.left = `${left}px`;
     contextMenu.style.top = `${top}px`;
   });
@@ -1735,30 +1744,36 @@ function bindEvents() {
   });
 
   // Type anywhere to start searching, unless the user is interacting with another control.
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
+  // Use capture so the shortcut still works when focus is on a nested/non-editable UI element.
+  window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+
     const target = e.target;
-    const isEditable = target instanceof HTMLElement && (
+    const isEditable = target instanceof Element && (
       target.matches('input, textarea, select, [contenteditable="true"]')
     );
     if (isEditable) return;
+
     if (e.key === 'Escape') {
-      if (document.activeElement === searchInput) {
-        searchInput.value = '';
-        state.searchQuery = '';
-        searchClear.classList.add('hidden');
-        renderCurrentView();
-      }
+      searchInput.value = '';
+      state.searchQuery = '';
+      searchClear.classList.add('hidden');
+      if (document.activeElement === searchInput) searchInput.blur();
+      renderCurrentView();
       return;
     }
+
+    // Space remains the global play/pause shortcut; every other printable
+    // character starts a search immediately.
     if (e.key.length !== 1 || e.key === ' ') return;
-    searchInput.focus();
+
+    searchInput.focus({ preventScroll: true });
     const start = searchInput.value.length;
     searchInput.setSelectionRange(start, start);
     searchInput.value += e.key;
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
     e.preventDefault();
-  });
+  }, true);
 
   $('detail-back').addEventListener('click', () => {
     detailView.classList.add('hidden');
