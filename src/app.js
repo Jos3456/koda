@@ -1413,33 +1413,25 @@ async function deleteSelected() {
   renderQueueList();
 }
 
-function showPlaylistPicker(track) {
-  const picker = document.createElement('div');
-  picker.style.position = 'fixed';
-  picker.style.background = 'var(--bg-2)';
-  picker.style.border = '1px solid var(--border)';
-  picker.style.borderRadius = 'var(--radius-sm)';
-  picker.style.padding = '12px';
-  picker.style.zIndex = '10001';
-  picker.style.minWidth = '180px';
-  picker.style.left = `${window.event.clientX}px`;
-  picker.style.top = `${window.event.clientY}px`;
+function showPlaylistPicker(track, anchor) {
+  document.querySelectorAll('.playlist-picker').forEach(el => el.remove());
 
-  const header = document.createElement('div');
-  header.textContent = 'Add to playlist';
-  header.style.marginBottom = '8px';
-  header.style.fontWeight = 'bold';
-  picker.appendChild(header);
+  const picker = document.createElement('div');
+  picker.className = 'playlist-picker';
+  picker.innerHTML = '<div class="playlist-picker-title">Add to playlist</div>';
+
+  if (!state.playlists.length) {
+    const empty = document.createElement('div');
+    empty.className = 'playlist-picker-empty';
+    empty.textContent = 'No playlists yet';
+    picker.appendChild(empty);
+  }
 
   for (const pl of state.playlists) {
     const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'playlist-picker-item';
     btn.textContent = pl.name;
-    btn.style.display = 'block';
-    btn.style.width = '100%';
-    btn.style.background = 'none';
-    btn.style.border = 'none';
-    btn.style.padding = '6px';
-    btn.style.cursor = 'pointer';
     btn.addEventListener('click', () => {
       if (!pl.tracks.includes(track.id)) pl.tracks.push(track.id);
       saveSettings();
@@ -1447,22 +1439,83 @@ function showPlaylistPicker(track) {
     });
     picker.appendChild(btn);
   }
+
   const newBtn = document.createElement('button');
+  newBtn.type = 'button';
+  newBtn.className = 'playlist-picker-create';
   newBtn.textContent = '+ Create new playlist';
-  newBtn.style.marginTop = '8px';
-  newBtn.style.color = 'var(--accent)';
   newBtn.addEventListener('click', () => {
     picker.remove();
     showPlaylistModal();
   });
   picker.appendChild(newBtn);
+
   document.body.appendChild(picker);
 
+  requestAnimationFrame(() => {
+    const rect = anchor?.getBoundingClientRect?.();
+    const pickerRect = picker.getBoundingClientRect();
+    const margin = 8;
+    if (rect) {
+      let left = rect.left + (rect.width - pickerRect.width) / 2;
+      let top = rect.top - pickerRect.height - margin;
+      if (top < margin) top = rect.bottom + margin;
+      left = Math.max(margin, Math.min(left, window.innerWidth - pickerRect.width - margin));
+      top = Math.max(margin, Math.min(top, window.innerHeight - pickerRect.height - margin));
+      picker.style.left = `${left}px`;
+      picker.style.top = `${top}px`;
+    }
+  });
+
   const closePicker = (e) => {
-    if (!picker.contains(e.target)) picker.remove();
+    if (!picker.contains(e.target) && e.target !== anchor) {
+      picker.remove();
+      document.removeEventListener('click', closePicker);
+    }
   };
   setTimeout(() => document.addEventListener('click', closePicker), 0);
 }
+
+function showTrackDetails(track) {
+  document.querySelectorAll('.track-details-overlay').forEach(el => el.remove());
+
+  const overlay = document.createElement('div');
+  overlay.className = 'track-details-overlay';
+  const inPlaylists = state.playlists.filter(pl => pl.tracks.includes(track.id));
+
+  const row = (label, value) => `
+    <div class="track-details-row">
+      <span class="track-details-label">${esc(label)}</span>
+      <span class="track-details-value">${esc(value || 'Not available')}</span>
+    </div>`;
+
+  overlay.innerHTML = `
+    <div class="track-details-card" role="dialog" aria-modal="true" aria-labelledby="track-details-title">
+      <div class="track-details-header">
+        <div>
+          <div class="track-details-kicker">SONG DETAILS</div>
+          <h2 id="track-details-title">${esc(track.title || 'Unknown song')}</h2>
+        </div>
+        <button type="button" class="track-details-close" aria-label="Close details">✕</button>
+      </div>
+      <div class="track-details-body">
+        ${row('Artist', track.artist)}
+        ${track.album ? row('Album', track.album) : ''}
+        ${row('In your playlists', inPlaylists.length ? inPlaylists.map(pl => pl.name).join(', ') : 'No')}
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+  const close = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  overlay.querySelector('.track-details-close').addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  document.addEventListener('keydown', onKey);
+}
+
 
 function addSelectedToPlaylist() {
   showPlaylistPickerForMultiple();
@@ -1657,15 +1710,13 @@ function showNowPlayingExpanded() {
       btn.innerHTML = icon;
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (state.currentTrack) handler(state.currentTrack);
+        if (state.currentTrack) handler(state.currentTrack, btn, e);
       });
       expandedActions.appendChild(btn);
     };
     expandedAction('Favourite', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>', (track) => { toggleFavourite(track.id); updateExpandedNowPlaying(); });
-    expandedAction('Add to playlist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><path d="M8 11h7M8 15h5M19 11v8M15 15h8"/></svg>', showPlaylistPicker);
-    expandedAction('Details', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>', (track) => { const tracks = state.library.filter(t => t.album === track.album); openDetail('album', track.album, tracks); });
-    expandedAction('View artist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', (track) => { const tracks = state.library.filter(t => t.artist === track.artist); openDetail('artist', track.artist, tracks); });
-    expandedAction('View album', '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>', (track) => { const tracks = state.library.filter(t => t.album === track.album); openDetail('album', track.album, tracks); });
+    expandedAction('Add to playlist', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2"/><path d="M8 11h7M8 15h5M19 11v8M15 15h8"/></svg>', (track, btn) => showPlaylistPicker(track, btn));
+    expandedAction('Details', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>', (track) => showTrackDetails(track));
     expandedAction('Delete', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>', (track) => deleteTrack(track), true);
     document.getElementById('expanded-seek').addEventListener('input', (e) => { if (audio.duration) audio.currentTime = (Number(e.target.value) / 100) * audio.duration; });
   }
