@@ -7,13 +7,13 @@
 
 :root {
   /* Base palette */
-  --bg:           #111111;
-  --bg-2:         #181818;
-  --bg-3:         #202020;
-  --surface:      rgba(255,255,255,0.05);
-  --surface-2:    rgba(255,255,255,0.08);
-  --border:       rgba(255,255,255,0.07);
-  --border-2:     rgba(255,255,255,0.12);
+  --bg:           #181818;
+  --bg-2:         #222222;
+  --bg-3:         #2b2b2b;
+  --surface:      rgba(255,255,255,0.07);
+  --surface-2:    rgba(255,255,255,0.11);
+  --border:       rgba(255,255,255,0.10);
+  --border-2:     rgba(255,255,255,0.16);
 
   /* Text */
   --text-primary:   #f5f5f5;
@@ -1266,6 +1266,18 @@ html, body {
   height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+}
+#now-playing-expanded .np-expanded-art-wrap.no-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-3);
+}
+#now-playing-expanded .np-expanded-art-wrap.no-art::before {
+  content: '♪';
+  color: var(--text-secondary);
+  font-size: 72px;
+  line-height: 1;
 }
 #now-playing-expanded #close-expanded {
   position: fixed;
