@@ -2817,8 +2817,10 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 3px;
-  border-radius: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
 }
 
 .view-switcher .view-toggle {
