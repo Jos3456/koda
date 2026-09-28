@@ -2570,3 +2570,97 @@ html, body {
   #controls #btn-shuffle, #controls #btn-repeat { display: none !important; }
   #volume-row, #queue-section { display: none !important; }
 }
+
+
+/* ——— SETTINGS PAGE ——— */
+#settings-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.settings-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 34px 32px 60px;
+}
+.settings-page-header {
+  margin-bottom: 28px;
+}
+.settings-page-header h1 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 400;
+}
+.settings-page-header p {
+  margin-top: 5px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.settings-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 14px;
+}
+.settings-page-grid .settings-section {
+  margin: 0;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.settings-page-grid .settings-section h3 {
+  margin-bottom: 12px;
+}
+.settings-action {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+}
+.settings-action:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+.settings-about {
+  grid-column: 1 / -1;
+}
+.settings-about-mark {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  float: left;
+  margin: 0 12px 8px 0;
+}
+.settings-about .about-description {
+  max-width: 620px;
+  margin: 6px 0 14px;
+}
+.settings-about .about-meta {
+  display: flex;
+  gap: 24px;
+  clear: both;
+}
+.settings-about .about-meta div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-about .about-meta span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.settings-about .about-meta strong {
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .settings-page { padding: 24px 18px 50px; }
+  .settings-page-grid { grid-template-columns: 1fr; }
+  .settings-about { grid-column: auto; }
+}
+
+/* Keep the titlebar intentionally minimal: Koda branding lives in the app nav. */
+#titlebar-drag { min-width: 0; }
