@@ -2984,3 +2984,48 @@ html, body {
     max-width: none;
   }
 }
+
+
+/* ===== FINAL CONTENT SPACING + CONTEXTUAL TOOLBAR =====
+   Keep the toolbar aligned to the window while giving library content
+   comfortable breathing room on both sides. */
+#library-view {
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+}
+
+#detail-view {
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+}
+
+#detail-back,
+#detail-header {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#detail-tracks {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#page-toolbar.hidden {
+  display: none !important;
+}
+
+.view-toggle[data-layout="compact"].hidden {
+  display: none !important;
+}
+
+@media (max-width: 650px) {
+  #library-view {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  #detail-view {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
