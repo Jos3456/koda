@@ -1141,52 +1141,93 @@ playlistModalCancel.addEventListener('click', () => {
 let currentPlaylistForAdd = null;
 
 function showAddSongsModal(playlistId) {
-  currentPlaylistForAdd = playlistId;
   const modal = document.getElementById('add-songs-modal');
   const listContainer = document.getElementById('add-songs-list');
-  const playlist = state.playlists.find(p => p.id === playlistId);
-  listContainer.innerHTML = '';
 
-  const available = state.library;
-  if (!available.length) {
-    listContainer.innerHTML = '<div class="add-songs-empty">Your library is empty.</div>';
-  } else {
-    available.forEach(track => {
-      const row = document.createElement('label');
-      row.className = 'add-song-option';
-      const checked = playlist?.tracks.includes(track.id);
-      const art = getTrackArt(track);
-      row.innerHTML = `
-        <input type="checkbox" class="song-checkbox" value="${track.id}" ${checked ? 'checked' : ''}>
-        <span class="add-song-art">${art ? '<img src="' + art + '" alt="">' : '♪'}</span>
-        <span class="add-song-info"><strong>${esc(track.title)}</strong><small>${esc(track.artist)} · ${esc(track.album)}</small></span>
-        <span class="add-song-check" aria-hidden="true">✓</span>
-      `;
-      listContainer.appendChild(row);
-    });
+  if (!modal || !listContainer) {
+    console.error('Koda: Add Songs modal elements are missing from the DOM.');
+    return;
   }
 
+  const playlist = state.playlists.find(p => p.id === playlistId);
+  if (!playlist) {
+    console.error('Koda: Cannot open Add Songs modal; playlist not found:', playlistId);
+    return;
+  }
+
+  currentPlaylistForAdd = playlistId;
+
+  // Open first so a rendering problem cannot leave the modal apparently
+  // unresponsive. The inline display also makes the modal independent of
+  // surrounding layout styles.
   modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+
+  listContainer.innerHTML = '';
+
+  const available = Array.isArray(state.library) ? state.library : [];
+  const playlistTracks = Array.isArray(playlist.tracks) ? playlist.tracks : [];
+
+  if (!available.length) {
+    listContainer.innerHTML = '<div class="add-songs-empty">Your library is empty.</div>';
+    return;
+  }
+
+  available.forEach(track => {
+    const row = document.createElement('label');
+    row.className = 'add-song-option';
+
+    const checked = playlistTracks.includes(track.id);
+    const art = getTrackArt(track);
+
+    row.innerHTML = `
+      <input type="checkbox" class="song-checkbox" value="${esc(track.id)}" ${checked ? 'checked' : ''}>
+      <span class="add-song-art">${art ? '<img src="' + art + '" alt="">' : '♪'}</span>
+      <span class="add-song-info"><strong>${esc(track.title)}</strong><small>${esc(track.artist)} · ${esc(track.album)}</small></span>
+      <span class="add-song-check" aria-hidden="true">✓</span>
+    `;
+
+    listContainer.appendChild(row);
+  });
 }
 
-document.getElementById('close-add-songs').addEventListener('click', () => {
-  document.getElementById('add-songs-modal').classList.add('hidden');
+function closeAddSongsModal() {
+  const modal = document.getElementById('add-songs-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.style.display = '';
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+document.getElementById('close-add-songs').addEventListener('click', closeAddSongsModal);
+document.getElementById('cancel-add-songs').addEventListener('click', closeAddSongsModal);
+
+document.getElementById('add-songs-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'add-songs-modal') closeAddSongsModal();
 });
-document.getElementById('cancel-add-songs').addEventListener('click', () => {
-  document.getElementById('add-songs-modal').classList.add('hidden');
-});
-document.getElementById('confirm-add-songs').addEventListener('click', () => {
-  const selected = Array.from(document.querySelectorAll('#add-songs-list .song-checkbox:checked')).map(cb => cb.value);
+
+document.getElementById('confirm-add-songs').addEventListener('click', async () => {
+  const selected = Array.from(
+    document.querySelectorAll('#add-songs-list .song-checkbox:checked')
+  ).map(cb => cb.value);
+
   const playlist = state.playlists.find(p => p.id === currentPlaylistForAdd);
+
   if (playlist) {
-    const newTracks = selected.filter(id => !playlist.tracks.includes(id));
-    playlist.tracks.push(...newTracks);
-    saveSettings();
-    if (state.detailContext?.type === 'playlist' && state.detailContext.id === currentPlaylistForAdd) {
+    const currentTracks = Array.isArray(playlist.tracks) ? playlist.tracks : [];
+    const newTracks = selected.filter(id => !currentTracks.includes(id));
+    playlist.tracks = [...currentTracks, ...newTracks];
+
+    await saveSettings();
+
+    if (state.detailContext?.type === 'playlist' &&
+        state.detailContext.id === currentPlaylistForAdd) {
       openPlaylist(currentPlaylistForAdd);
     }
   }
-  document.getElementById('add-songs-modal').classList.add('hidden');
+
+  closeAddSongsModal();
 });
 
 // ——— PLAYBACK ———
