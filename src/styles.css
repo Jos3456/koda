@@ -2678,8 +2678,8 @@ html, body {
   right: 0 !important;
   height: var(--titlebar-h) !important;
   display: flex !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: rgba(17,17,17,.86) !important;
   backdrop-filter: blur(22px) !important;
   border: none !important;
@@ -2691,11 +2691,11 @@ html, body {
 #nav {
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 2px !important;
   height: 100% !important;
   min-width: 0 !important;
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   padding: 0 8px !important;
   -webkit-app-region: no-drag !important;
 }
@@ -2712,20 +2712,21 @@ html, body {
 }
 
 #window-controls {
-  flex: 0 0 auto !important;
-  position: static !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
-  margin-left: auto !important;
   -webkit-app-region: no-drag !important;
 }
 
 .wc-btn {
-  width: 46px !important;
-  height: 100% !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
+  width: 34px !important;
+  height: 34px !important;
+  margin: 0 2px !important;
+  padding: 0 !important;
+  border-radius: 7px !important;
   -webkit-app-region: no-drag !important;
 }
 
@@ -2772,6 +2773,7 @@ html, body {
   }
 
   .wc-btn {
-    width: 40px !important;
+    width: 32px !important;
+    height: 32px !important;
   }
 }
