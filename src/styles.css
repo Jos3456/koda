@@ -2356,8 +2356,7 @@ html, body {
   width: 100% !important;
   min-width: 0 !important;
   padding: 0 24px !important;
-  border-right: none !important;
-  border-bottom: 1px solid var(--border) !important;
+  border: none !important;
   background: rgba(17,17,17,0.72) !important;
   backdrop-filter: blur(18px) !important;
   overflow: visible !important;
@@ -2526,8 +2525,7 @@ html, body {
 
 .light #sidebar {
   background: rgba(255,255,255,.84) !important;
-  border-bottom-color: var(--border) !important;
-  border-right: none !important;
+  border: none !important;
 }
 
 .light #player-panel {
