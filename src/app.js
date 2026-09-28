@@ -102,7 +102,7 @@ async function init() {
   if (settings.folderPath) state.folderPath = settings.folderPath;
   if (settings.settings) Object.assign(state.settings, settings.settings);
   if (settings.lightTheme !== undefined) state.lightTheme = settings.lightTheme;
-  if (['list', 'compact', 'grid'].includes(settings.layout)) state.layout = settings.layout;
+  if (['list', 'grid'].includes(settings.layout)) state.layout = settings.layout;
   if (settings.favourites) state.favourites = new Set(settings.favourites);
   if (settings.playlists) state.playlists = settings.playlists;
   if (settings.trackIdMap && typeof settings.trackIdMap === 'object') {
@@ -556,10 +556,6 @@ function renderSongList(tracks, container) {
     renderSongGrid(tracks, container);
     return;
   }
-  if (state.layout === 'compact' && (state.currentView === 'songs' || state.currentView === 'favourites' || ['playlist', 'album', 'artist', 'genre'].includes(state.detailContext?.type))) {
-    renderModernCompact(tracks, container);
-    return;
-  }
   const table = document.createElement('table');
   table.className = 'songs-table';
   let theadHTML = `<thead class="songs-thead">`;
@@ -651,72 +647,6 @@ function renderSongList(tracks, container) {
       });
     });
   }
-}
-
-function renderModernCompact(tracks, container) {
-  const list = document.createElement('div');
-  list.className = 'modern-compact-list';
-
-  tracks.forEach((track, idx) => {
-    const row = document.createElement('button');
-    row.type = 'button';
-    row.className = 'modern-compact-row';
-    row.dataset.trackId = track.id;
-    if (state.currentTrack?.id === track.id) row.classList.add('active', ...(state.isPlaying ? ['is-playing'] : []));
-
-    const art = getTrackArt(track);
-    const artMarkup = art
-      ? '<img class="compact-art" src="' + art + '" alt="">'
-      : '<span class="compact-art compact-art-placeholder">♪</span>';
-
-    row.innerHTML = `
-      ${state.selectionMode ? '<span class="compact-check"><input type="checkbox" class="song-checkbox" data-id="' + track.id + '" ' + (state.selectedTracks.has(track.id) ? 'checked' : '') + '></span>' : ''}
-      <span class="compact-art-wrap">${artMarkup}<span class="compact-playing-bars" aria-hidden="true"><i></i><i></i><i></i></span></span>
-      <span class="compact-main"><strong>${esc(track.title)}</strong></span>
-      <span class="compact-duration">${formatDuration(track.duration)}</span>
-      ${state.detailContext?.type === 'playlist' ? '<span class="compact-remove"><button type="button" class="playlist-remove-song" aria-label="Remove from playlist" title="Remove from playlist">×</button></span>' : ''}
-    `;
-
-    const checkbox = row.querySelector('.song-checkbox');
-    if (checkbox) {
-      checkbox.addEventListener('click', e => e.stopPropagation());
-      checkbox.addEventListener('change', () => {
-        if (checkbox.checked) state.selectedTracks.add(track.id);
-        else state.selectedTracks.delete(track.id);
-      });
-    }
-
-    const remove = row.querySelector('.playlist-remove-song');
-    if (remove) {
-      remove.addEventListener('click', e => {
-        e.stopPropagation();
-        const playlist = state.playlists.find(p => p.id === state.detailContext?.id);
-        if (!playlist) return;
-        playlist.tracks = playlist.tracks.filter(id => id !== track.id);
-        saveSettings();
-        openPlaylist(playlist.id);
-      });
-    }
-
-    row.addEventListener('click', e => {
-      if (state.selectionMode && e.target.closest('.song-checkbox')) return;
-      if (state.selectionMode) {
-        toggleTrackSelection(track.id);
-        return;
-      }
-      playFromList(tracks, idx);
-    });
-    row.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      const isMultiple = state.selectionMode && state.selectedTracks.size > 0;
-      showContextMenu(e, track, isMultiple);
-    });
-
-    list.appendChild(row);
-  });
-
-  container.innerHTML = '';
-  container.appendChild(list);
 }
 
 function getTrackArt(track) {
@@ -1736,26 +1666,10 @@ function updateLayoutToggleButtons() {
   });
 }
 
-function isCompactLayoutSupported() {
-  return (
-    state.currentView === 'songs' ||
-    state.currentView === 'favourites' ||
-    ['playlist', 'album', 'artist', 'genre'].includes(state.detailContext?.type)
-  );
-}
-
 function updatePageToolbar() {
   const toolbar = $('page-toolbar');
-  const compactBtn = document.querySelector('.view-toggle[data-layout="compact"]');
   const showToolbar = state.currentView !== 'settings';
-  const showCompact = showToolbar && isCompactLayoutSupported();
-
   if (toolbar) toolbar.classList.toggle('hidden', !showToolbar);
-  if (compactBtn) {
-    compactBtn.classList.toggle('hidden', !showCompact);
-    compactBtn.setAttribute('aria-hidden', String(!showCompact));
-    compactBtn.tabIndex = showCompact ? 0 : -1;
-  }
 }
 
 function switchView(view) {
