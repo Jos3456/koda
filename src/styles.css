@@ -2777,3 +2777,80 @@ html, body {
     height: 32px !important;
   }
 }
+
+
+/* ===== REUSABLE PAGE TOOLBAR ===== */
+#page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+#page-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+#page-heading #view-title {
+  margin: 0;
+}
+
+#page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#search-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.view-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.view-switcher .view-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 7px;
+}
+
+.page-action-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  #page-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #page-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #search-wrap {
+    flex: 1 1 auto;
+  }
+}
