@@ -2360,7 +2360,6 @@ function bindEvents() {
   $('btn-prev').addEventListener('click', prevTrack);
   $('btn-next').addEventListener('click', nextTrack);
 
-  $('folder-btn').addEventListener('click', pickFolder);
   $('welcome-folder-btn').addEventListener('click', pickFolder);
 
   document.querySelectorAll('.nav-btn').forEach(btn => {
