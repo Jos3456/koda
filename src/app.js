@@ -1737,6 +1737,20 @@ function switchView(view) {
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === view);
   });
+
+  const settingsView = $('settings-view');
+  if (settingsView) settingsView.classList.toggle('hidden', view !== 'settings');
+
+  if (view === 'settings') {
+    libraryView.classList.add('hidden');
+    detailView.classList.add('hidden');
+    welcomeState.classList.add('hidden');
+    loadingState.classList.add('hidden');
+    viewTitle.textContent = 'Settings';
+    viewCount.textContent = '';
+    return;
+  }
+
   if (state.library.length) {
     showState('library');
     renderCurrentView();
@@ -2403,29 +2417,8 @@ function bindEvents() {
     libraryView.classList.remove('hidden');
   });
 
-  const settingsOverlay = $('settings-overlay');
-  const settingsBtn = document.createElement('button');
-  settingsBtn.id = 'settings-trigger';
-  settingsBtn.title = 'Settings';
-  settingsBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
-  $('window-controls').insertBefore(settingsBtn, $('btn-min'));
-  settingsBtn.addEventListener('click', () => settingsOverlay.classList.remove('hidden'));
-
-  const aboutOverlay = $('about-overlay');
-  const closeAbout = () => aboutOverlay.classList.add('hidden');
-  $('about-btn').addEventListener('click', () => aboutOverlay.classList.remove('hidden'));
-  $('about-close').addEventListener('click', closeAbout);
-  aboutOverlay.addEventListener('click', (e) => {
-    if (e.target === aboutOverlay) closeAbout();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !aboutOverlay.classList.contains('hidden')) closeAbout();
-  });
-
-  $('settings-close').addEventListener('click', () => settingsOverlay.classList.add('hidden'));
-  settingsOverlay.addEventListener('click', (e) => {
-    if (e.target === settingsOverlay) settingsOverlay.classList.add('hidden');
-  });
+  // Settings is a normal navigation view, not a modal.
+  $('settings-folder-btn').addEventListener('click', pickFolder);
 
   $('toggle-albums').addEventListener('change', (e) => {
     state.settings.showAlbums = e.target.checked;
@@ -2446,19 +2439,7 @@ function bindEvents() {
     saveSettings();
   });
 
-  const lightThemeRow = document.createElement('div');
-  lightThemeRow.className = 'settings-section';
-  lightThemeRow.innerHTML = `
-    <h3>Appearance</h3>
-    <label class="toggle-row">
-      <span>Light theme</span>
-      <input type="checkbox" id="toggle-light" ${state.lightTheme ? 'checked' : ''}>
-      <span class="toggle-slider"></span>
-    </label>
-  `;
-  const settingsModal = $('settings-modal');
-  settingsModal.appendChild(lightThemeRow);
-  document.getElementById('toggle-light').addEventListener('change', (e) => {
+  $('toggle-light').addEventListener('change', (e) => {
     state.lightTheme = e.target.checked;
     document.body.classList.toggle('light', state.lightTheme);
     saveSettings();
