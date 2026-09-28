@@ -2189,86 +2189,6 @@ html, body {
 }
 
 
-/* ===== MODERN COMPACT SONG VIEW ===== */
-.modern-compact-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
-.modern-compact-row {
-  width: 100%;
-  min-height: 60px;
-  display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) 52px 28px;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 10px;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-primary);
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-.modern-compact-row:has(.compact-check) {
-  grid-template-columns: 24px 46px minmax(0, 1fr) 52px 28px;
-}
-.modern-compact-row:hover { background: var(--surface); }
-.modern-compact-row.active { background: var(--accent-dim); }
-.compact-art-wrap { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
-.compact-art { width: 46px; height: 46px; object-fit: cover; border-radius: 5px; display: block; }
-.compact-art-placeholder { display:flex; align-items:center; justify-content:center; background:var(--bg-3); color:var(--text-muted); font-size:18px; }
-.compact-main { min-width: 0; width: 100%; overflow: hidden; }
-.compact-main strong {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.25;
-}
-.compact-duration {
-  min-width: 0;
-  color: var(--text-secondary);
-  font-size: 10.5px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.compact-playing-bars {
-  position:absolute;
-  inset:0;
-  display:none;
-  align-items:flex-end;
-  justify-content:center;
-  gap:2px;
-  padding-bottom:7px;
-  background:rgba(0,0,0,.25);
-  border-radius:5px;
-}
-.modern-compact-row.is-playing .compact-playing-bars { display:flex; }
-.compact-playing-bars i { width:3px; height:8px; background:var(--accent); border-radius:2px; animation:bar-bounce .7s ease-in-out infinite alternate; }
-.compact-playing-bars i:nth-child(2){animation-delay:.15s}
-.compact-playing-bars i:nth-child(3){animation-delay:.3s}
-.compact-check { display:flex; align-items:center; }
-.compact-remove { display:flex; align-items:center; justify-content:center; }
-.compact-remove .playlist-remove-song {
-  width:26px;
-  height:26px;
-  border:0;
-  background:transparent;
-  color:var(--text-muted);
-  cursor:pointer;
-  border-radius:50%;
-}
-.compact-remove .playlist-remove-song:hover { color:var(--text-primary); background:var(--surface-2); }
-@media (max-width: 650px) {
-  .modern-compact-row { grid-template-columns: 42px minmax(0,1fr) 48px 24px; gap: 8px; }
-  .modern-compact-row:has(.compact-check) { grid-template-columns: 24px 42px minmax(0,1fr) 48px 24px; }
-  .compact-art-wrap, .compact-art { width: 42px; height: 42px; }
-  .compact-main strong { font-size: 13px; }
-}
 /* Modern add-songs modal */
 #add-songs-modal .add-songs-content { border:1px solid var(--border-2); background:var(--bg-2); }
 #add-songs-modal .add-songs-header { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; background:transparent; }
@@ -2302,13 +2222,6 @@ html, body {
   background: color-mix(in srgb, var(--accent) 16%, white);
   border-color: var(--accent);
 }
-
-/* Keep the song title as the primary, always-visible field in MCV. */
-.modern-compact-row .compact-main { min-width: 0; width: 100%; }
-.modern-compact-row .compact-main strong { display: block; min-width: 0; color: var(--text-primary); font-size: 14px; font-weight: 650; }
-.modern-compact-row .compact-main small { display: block; min-width: 0; }
-.modern-compact-row .compact-album { min-width: 0; max-width: 120px; }
-.modern-compact-row .compact-duration { min-width: 0; }
 
 /* ===== KODA BRAND ASSETS ===== */
 #titlebar-logo {
@@ -2936,11 +2849,11 @@ html, body {
 
 .view-switcher {
   height: 34px;
-  padding: 2px;
+  padding: 0;
   gap: 2px;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 9px;
-  background: var(--surface);
+  background: transparent;
 }
 
 .view-switcher .view-toggle {
@@ -3011,10 +2924,6 @@ html, body {
 }
 
 #page-toolbar.hidden {
-  display: none !important;
-}
-
-.view-toggle[data-layout="compact"].hidden {
   display: none !important;
 }
 
