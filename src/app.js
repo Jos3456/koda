@@ -117,7 +117,6 @@ async function init() {
   updateShuffleBtn();
   updateRepeatBtn();
   updateHeartButton();
-  addHeartButton();
   initMediaSession();
 }
 
@@ -2009,28 +2008,11 @@ function updateHeartButton() {
   }
 }
 
-function addHeartButton() {
-  const playerInfo = $('player-info');
-  if (!playerInfo.querySelector('#fav-heart')) {
-    const heart = document.createElement('button');
-    heart.id = 'fav-heart';
-    heart.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.07 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
-    heart.style.background = 'none';
-    heart.style.border = 'none';
-    heart.style.cursor = 'pointer';
-    heart.style.marginLeft = '8px';
-    heart.style.verticalAlign = 'middle';
-    heart.addEventListener('click', () => {
-      if (state.currentTrack) toggleFavourite(state.currentTrack.id);
-    });
-    playerInfo.appendChild(heart);
-  }
-}
 
 function showNowPlayingMenu(e, track) {
   // Capture the clicked button's geometry before the event object loses currentTarget.
   const anchor = e.currentTarget || e.target;
-  const anchorRect = anchor?.getBoundingClientRect?.() || npCard.getBoundingClientRect();
+  const anchorRect = anchor?.getBoundingClientRect?.() || playerPanel.getBoundingClientRect();
 
   // Reuse the existing context-menu actions.
   showContextMenu(e, track, false);
@@ -2253,9 +2235,6 @@ function bindEvents() {
   $('btn-max').addEventListener('click', () => window.koda.windowMaximize());
   $('btn-close').addEventListener('click', () => window.koda.windowClose());
 
-  btnPlay.addEventListener('click', togglePlay);
-  $('btn-prev').addEventListener('click', prevTrack);
-  $('btn-next').addEventListener('click', nextTrack);
 
   $('welcome-folder-btn').addEventListener('click', pickFolder);
 
