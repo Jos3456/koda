@@ -117,6 +117,7 @@ async function init() {
   updateVolFill();
   applySettings();
   updateLayoutToggleButtons();
+  updatePageToolbar();
 
   if (state.folderPath) {
     await loadFolder(state.folderPath);
@@ -394,6 +395,15 @@ function renderEmptyState(container, { icon = '♪', title = 'Nothing here yet',
 
 function renderCurrentView() {
   const view = state.currentView;
+
+  // Settings is a standalone page. Never render library content over it.
+  if (view === 'settings') {
+    libraryView.classList.add('hidden');
+    detailView.classList.add('hidden');
+    welcomeState.classList.add('hidden');
+    loadingState.classList.add('hidden');
+    return;
+  }
   const query = state.searchQuery.toLowerCase();
 
   let tracks = state.library.filter(t => {
@@ -1726,14 +1736,40 @@ function updateLayoutToggleButtons() {
   });
 }
 
+function isCompactLayoutSupported() {
+  return (
+    state.currentView === 'songs' ||
+    state.currentView === 'favourites' ||
+    ['playlist', 'album', 'artist', 'genre'].includes(state.detailContext?.type)
+  );
+}
+
+function updatePageToolbar() {
+  const toolbar = $('page-toolbar');
+  const compactBtn = document.querySelector('.view-toggle[data-layout="compact"]');
+  const showToolbar = state.currentView !== 'settings';
+  const showCompact = showToolbar && isCompactLayoutSupported();
+
+  if (toolbar) toolbar.classList.toggle('hidden', !showToolbar);
+  if (compactBtn) {
+    compactBtn.classList.toggle('hidden', !showCompact);
+    compactBtn.setAttribute('aria-hidden', String(!showCompact));
+    compactBtn.tabIndex = showCompact ? 0 : -1;
+  }
+}
+
 function switchView(view) {
   state.currentView = view;
+  state.detailContext = view === 'songs' || view === 'favourites' ? null : state.detailContext;
+
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === view);
   });
 
   const settingsView = $('settings-view');
   if (settingsView) settingsView.classList.toggle('hidden', view !== 'settings');
+
+  updatePageToolbar();
 
   if (view === 'settings') {
     libraryView.classList.add('hidden');
@@ -1752,6 +1788,8 @@ function switchView(view) {
 
 document.querySelectorAll('.view-toggle').forEach(btn => {
   btn.addEventListener('click', () => {
+    if (state.currentView === 'settings') return;
+
     state.layout = btn.dataset.layout;
     updateLayoutToggleButtons();
     saveSettings();
