@@ -32,6 +32,7 @@ const state = {
   playlists: [],
   selectedTracks: new Set(),
   selectionMode: false,
+  trackIdMap: {},
 };
 
 // ——— AUDIO ———
@@ -105,6 +106,9 @@ async function init() {
   if (settings.layout === 'list' || settings.layout === 'grid') state.layout = settings.layout;
   if (settings.favourites) state.favourites = new Set(settings.favourites);
   if (settings.playlists) state.playlists = settings.playlists;
+  if (settings.trackIdMap && typeof settings.trackIdMap === 'object') {
+    state.trackIdMap = settings.trackIdMap;
+  }
 
   if (state.lightTheme) document.body.classList.add('light');
   else document.body.classList.remove('light');
@@ -240,10 +244,33 @@ async function loadFolder(folderPath) {
     state.library = [];
     let processed = 0;
     const batchSize = 20;
+    const usedIds = new Set();
+
     for (let i = 0; i < files.length; i += batchSize) {
       const batch = files.slice(i, i + batchSize);
       const results = await Promise.all(batch.map(f => window.koda.getMetadata(f)));
-      state.library.push(...results.map((m, idx) => ({ ...m, id: `track-${i+idx}` })));
+
+      state.library.push(...results.map((m, idx) => {
+        const filePath = m.path || batch[idx];
+        let id = state.trackIdMap[filePath];
+
+        if (!id) {
+          id = `track-${hashString(filePath)}`;
+        }
+
+        // Guard against an old/corrupt mapping producing duplicate IDs.
+        if (usedIds.has(id)) {
+          let suffix = 2;
+          const baseId = id;
+          while (usedIds.has(id)) id = `${baseId}-${suffix++}`;
+        }
+
+        usedIds.add(id);
+        state.trackIdMap[filePath] = id;
+
+        return { ...m, id };
+      }));
+
       processed += batch.length;
       loadingText.textContent = `Loading… ${processed} / ${files.length}`;
     }
@@ -1485,6 +1512,7 @@ async function saveSettings() {
     layout: state.layout,
     favourites: Array.from(state.favourites),
     playlists: state.playlists,
+    trackIdMap: state.trackIdMap,
   });
 }
 
@@ -2211,6 +2239,17 @@ function bindEvents() {
       case 'ArrowDown': state.volume = Math.max(0, state.volume - 0.05); audio.volume = state.volume; volBar.value = state.volume; updateVolFill(); break;
     }
   });
+}
+
+// Stable IDs keep favourites and playlists attached to the same file
+// even when the library scan order changes.
+function hashString(value) {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
 }
 
 // ——— UTILS ———
