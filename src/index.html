@@ -14,9 +14,7 @@
 
 <!-- Custom titlebar -->
 <div id="titlebar">
-  <div id="titlebar-drag">
-    <img id="titlebar-logo" src="../public/assets/logos/koda-64x64.png" alt="Koda">
-  </div>
+  <div id="titlebar-drag"></div>
   <div id="window-controls">
     <button class="wc-btn" id="btn-min" title="Minimize">
       <svg width="10" height="2" viewBox="0 0 10 2"><rect width="10" height="1.5" rx="0.75" fill="currentColor"/></svg>
@@ -71,6 +69,10 @@
   <button class="nav-btn" data-view="playlists">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Playlists
+  </button>
+  <button class="nav-btn" data-view="settings" id="nav-settings" title="Settings">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 20.4a1.65 1.65 0 0 0-1.51 1.51V22a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 20.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 16 1.65 1.65 0 0 0 2.09 14.5H2a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 3.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 6.04 4.3l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1.49-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.4 8a1.65 1.65 0 0 0 1.51 1.5H22a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 20.4 15z"/></svg>
+    Settings
   </button>
     </nav>
 
@@ -127,6 +129,44 @@
       <h1 id="view-title">Songs</h1>
       <span id="view-count"></span>
     </div>
+
+    <!-- Settings view -->
+    <section id="settings-view" class="hidden" aria-labelledby="settings-title">
+      <div class="settings-page">
+        <div class="settings-page-header">
+          <h1 id="settings-title">Settings</h1>
+          <p>Customize how Koda looks and behaves.</p>
+        </div>
+
+        <div class="settings-page-grid">
+          <section class="settings-section">
+            <h3>Library</h3>
+            <label class="toggle-row"><span>Albums</span><input type="checkbox" id="toggle-albums" checked><span class="toggle-slider"></span></label>
+            <label class="toggle-row"><span>Artists</span><input type="checkbox" id="toggle-artists" checked><span class="toggle-slider"></span></label>
+            <label class="toggle-row"><span>Genres</span><input type="checkbox" id="toggle-genres" checked><span class="toggle-slider"></span></label>
+            <button id="settings-folder-btn" class="settings-action" type="button">Change Music Folder</button>
+          </section>
+
+          <section class="settings-section">
+            <h3>Appearance</h3>
+            <label class="toggle-row"><span>Dynamic theme from album art</span><input type="checkbox" id="toggle-theme" checked><span class="toggle-slider"></span></label>
+            <label class="toggle-row"><span>Light theme</span><input type="checkbox" id="toggle-light"><span class="toggle-slider"></span></label>
+          </section>
+
+          <section class="settings-section settings-about">
+            <h3>About Koda</h3>
+            <img class="settings-about-mark" src="../public/assets/logos/koda-192x192.png" alt="Koda">
+            <div class="about-kicker">KODA</div>
+            <p class="about-description">A clean, offline music player built around your own library. Your music stays yours.</p>
+            <div class="about-meta">
+              <div><span>Version</span><strong>1.0.0</strong></div>
+              <div><span>Made for</span><strong>Desktop</strong></div>
+              <div><span>License</span><strong>MIT</strong></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
 
     <!-- Loading state -->
     <div id="loading-state" class="hidden">
@@ -237,63 +277,6 @@
   </div>
 </div>
 
-<!-- About modal -->
-<div id="about-overlay" class="hidden">
-  <div id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
-    <button id="about-close" class="about-close" type="button" aria-label="Close About">✕</button>
-    <img class="about-mark" src="../public/assets/logos/koda-192x192.png" alt="Koda">
-    <div class="about-kicker">KODA</div>
-    <h2 id="about-title">Music, without the noise.</h2>
-    <p class="about-description">
-      Koda is a clean, offline music player built around your own library.
-      Your music stays yours.
-    </p>
-    <div class="about-meta">
-      <div><span>Version</span><strong>1.0.0</strong></div>
-      <div><span>Made for</span><strong>Desktop</strong></div>
-      <div><span>License</span><strong>MIT</strong></div>
-    </div>
-    <div class="about-footer">Koda — your library, your way.</div>
-  </div>
-</div>
-
-<!-- Settings modal -->
-<div id="settings-overlay" class="hidden">
-  <div id="settings-modal">
-    <div id="settings-header">
-      <h2>Settings</h2>
-      <button id="settings-close">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="settings-section">
-      <h3>Visible Views</h3>
-      <label class="toggle-row">
-        <span>Albums</span>
-        <input type="checkbox" id="toggle-albums" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <label class="toggle-row">
-        <span>Artists</span>
-        <input type="checkbox" id="toggle-artists" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <label class="toggle-row">
-        <span>Genres</span>
-        <input type="checkbox" id="toggle-genres" checked>
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-    <div class="settings-section">
-      <h3>Appearance</h3>
-      <label class="toggle-row">
-        <span>Dynamic theme from album art</span>
-        <input type="checkbox" id="toggle-theme" checked>
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-  </div>
-</div>
 <!-- Add Songs Modal -->
 <div id="add-songs-modal" class="hidden">
   <div class="add-songs-content">
