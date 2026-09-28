@@ -2854,3 +2854,129 @@ html, body {
     flex: 1 1 auto;
   }
 }
+
+
+/* ===== PAGE TOOLBAR UI POLISH ===== */
+#page-toolbar {
+  min-height: 38px;
+  margin-bottom: 16px;
+}
+
+#page-heading {
+  gap: 0;
+}
+
+#view-count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+#page-actions {
+  gap: 8px;
+}
+
+#search-wrap {
+  position: relative;
+  flex: 0 0 230px;
+  max-width: 230px;
+  height: 34px;
+  padding: 0 10px;
+  gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--muted);
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+#search-wrap:focus-within {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+#search-wrap svg {
+  flex: 0 0 auto;
+  opacity: .7;
+}
+
+#search-input {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+}
+
+#search-input::placeholder {
+  color: var(--muted);
+}
+
+.search-clear {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 5px;
+  color: var(--muted);
+}
+
+.view-switcher {
+  height: 34px;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+}
+
+.view-switcher .view-toggle {
+  min-width: 34px;
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--muted);
+}
+
+.view-switcher .view-toggle:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.view-switcher .view-toggle.active {
+  color: var(--text);
+  background: var(--surface-hover);
+  box-shadow: 0 1px 3px rgba(0,0,0,.16);
+}
+
+.page-action-btn {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.page-action-btn:hover {
+  background: var(--surface-hover);
+}
+
+@media (max-width: 700px) {
+  #search-wrap {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+}
