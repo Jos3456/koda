@@ -2269,3 +2269,28 @@ html, body {
 .modern-compact-row .compact-main small { display: block; min-width: 0; }
 .modern-compact-row .compact-album { min-width: 0; max-width: 120px; }
 .modern-compact-row .compact-duration { min-width: 0; }
+
+/* ===== KODA BRAND ASSETS ===== */
+#titlebar-logo {
+  width: 22px;
+  height: 22px;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
+  flex: 0 0 22px;
+  opacity: .92;
+}
+
+#sidebar-brand-logo {
+  width: 32px;
+  height: 32px;
+  display: block;
+  object-fit: contain;
+  border-radius: 9px;
+  flex: 0 0 32px;
+}
+
+.about-mark {
+  object-fit: contain;
+  padding: 7px;
+}
