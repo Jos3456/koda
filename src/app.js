@@ -1703,6 +1703,7 @@ function applySettings() {
   $('toggle-artists').checked = s.showArtists;
   $('toggle-genres').checked = s.showGenres;
   $('toggle-theme').checked = s.dynamicTheme;
+  $('toggle-light').checked = state.lightTheme;
 
   if ((state.currentView === 'albums' && !s.showAlbums) ||
       (state.currentView === 'artists' && !s.showArtists) ||
