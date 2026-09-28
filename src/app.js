@@ -1187,9 +1187,14 @@ audio.addEventListener('error', (e) => {
 });
 
 function handleTrackEnd() {
+  if (!state.queue.length || state.queueIndex < 0) {
+    state.isPlaying = false;
+    return;
+  }
+
   if (state.repeatMode === 'one') {
     audio.currentTime = 0;
-    audio.play();
+    audio.play().catch(console.error);
     return;
   }
 
@@ -1197,13 +1202,18 @@ function handleTrackEnd() {
 
   if (nextIdx >= state.queue.length) {
     if (state.repeatMode === 'all') {
-      nextIdx = 0;
-    } else {
-      state.isPlaying = false;
-      iconPlay.classList.remove('hidden');
-      iconPause.classList.add('hidden');
+      state.queueIndex = 0;
+      playCurrentQueueItem();
       return;
     }
+
+    state.isPlaying = false;
+    iconPlay.classList.remove('hidden');
+    iconPause.classList.add('hidden');
+    artGlow.style.opacity = '0';
+    updateActiveRows();
+    updateExpandedNowPlaying();
+    return;
   }
 
   state.queueIndex = nextIdx;
@@ -1211,10 +1221,13 @@ function handleTrackEnd() {
 }
 
 function prevTrack() {
+  if (!state.queue.length || state.queueIndex < 0) return;
+
   if (audio.currentTime > 3) {
     audio.currentTime = 0;
     return;
   }
+
   let idx = state.queueIndex - 1;
   if (idx < 0) idx = state.queue.length - 1;
   state.queueIndex = idx;
@@ -1223,6 +1236,7 @@ function prevTrack() {
 
 function nextTrack() {
   if (!state.queue.length) return;
+
   let idx = state.queueIndex + 1;
   if (idx >= state.queue.length) idx = 0;
   state.queueIndex = idx;
@@ -1615,7 +1629,17 @@ async function deleteTrack(track) {
     }
     const qidx = state.queue.findIndex(t => t.id === track.id);
     if (qidx !== -1) state.queue.splice(qidx, 1);
-    if (state.currentTrack?.id === track.id) handleTrackEnd();
+    if (state.currentTrack?.id === track.id) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      state.currentTrack = null;
+      state.isPlaying = false;
+      state.queueIndex = Math.min(state.queueIndex, state.queue.length - 1);
+      npCard.classList.add('hidden');
+      updateHeartButton();
+      resetTheme();
+    }
     saveSettings();
     renderCurrentView();
     renderQueueList();
@@ -1641,7 +1665,17 @@ async function deleteSelected() {
     }
     const qidx = state.queue.findIndex(t => t.id === track.id);
     if (qidx !== -1) state.queue.splice(qidx, 1);
-    if (state.currentTrack?.id === track.id) handleTrackEnd();
+    if (state.currentTrack?.id === track.id) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+      state.currentTrack = null;
+      state.isPlaying = false;
+      state.queueIndex = Math.min(state.queueIndex, state.queue.length - 1);
+      npCard.classList.add('hidden');
+      updateHeartButton();
+      resetTheme();
+    }
   }
   clearSelection();
   saveSettings();
