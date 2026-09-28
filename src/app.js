@@ -67,7 +67,6 @@ const detailTracks = $('detail-tracks');
 const welcomeState = $('welcome-state');
 const loadingState = $('loading-state');
 const loadingText  = $('loading-text');
-const viewTitle    = $('view-title');
 const viewCount    = $('view-count');
 const searchInput  = $('search-input');
 const searchClear  = $('search-clear');
@@ -407,7 +406,6 @@ function renderCurrentView() {
 
   if (view === 'favourites') {
     tracks = tracks.filter(t => state.favourites.has(t.id));
-    viewTitle.textContent = 'Favourites';
     viewCount.textContent = `${tracks.length} songs`;
     if (!tracks.length) {
       const searching = Boolean(query);
@@ -434,7 +432,6 @@ function renderCurrentView() {
   if (view === 'playlists') {
     detailView.classList.add('hidden');
     libraryView.classList.remove('hidden');
-    viewTitle.textContent = 'Playlists';
     viewCount.textContent = `${state.playlists.length} playlists`;
     if (!state.playlists.length) {
       renderEmptyState(libraryView, {
@@ -454,7 +451,6 @@ function renderCurrentView() {
   libraryView.classList.remove('hidden');
 
   if (view === 'songs') {
-    viewTitle.textContent = 'Songs';
     viewCount.textContent = `${tracks.length} songs`;
     if (!tracks.length) {
       renderEmptyState(libraryView, {
@@ -474,7 +470,6 @@ function renderCurrentView() {
     }
   } else if (view === 'albums') {
     const albums = groupBy(tracks, 'album');
-    viewTitle.textContent = 'Albums';
     viewCount.textContent = `${Object.keys(albums).length} albums`;
     if (!Object.keys(albums).length) {
       renderEmptyState(libraryView, {
@@ -494,7 +489,6 @@ function renderCurrentView() {
     }
   } else if (view === 'artists') {
     const artists = groupBy(tracks, 'artist');
-    viewTitle.textContent = 'Artists';
     viewCount.textContent = `${Object.keys(artists).length} artists`;
     if (!Object.keys(artists).length) {
       renderEmptyState(libraryView, {
@@ -514,7 +508,6 @@ function renderCurrentView() {
     }
   } else if (view === 'genres') {
     const genres = groupBy(tracks, 'genre');
-    viewTitle.textContent = 'Genres';
     viewCount.textContent = `${Object.keys(genres).length} genres`;
     if (!Object.keys(genres).length) {
       renderEmptyState(libraryView, {
@@ -1747,7 +1740,6 @@ function switchView(view) {
     detailView.classList.add('hidden');
     welcomeState.classList.add('hidden');
     loadingState.classList.add('hidden');
-    viewTitle.textContent = 'Settings';
     viewCount.textContent = '';
     return;
   }
