@@ -1792,41 +1792,77 @@ function addSelectedToPlaylist() {
 }
 
 function showPlaylistPickerForMultiple() {
+  document.querySelectorAll('.multi-playlist-picker').forEach(el => el.remove());
+
   const picker = document.createElement('div');
-  picker.style.cssText = 'position:fixed; background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; z-index:10001; min-width:180px;';
-  picker.style.left = `${window.event.clientX}px`;
-  picker.style.top = `${window.event.clientY}px`;
+  picker.className = 'multi-playlist-picker';
+  picker.style.cssText = 'position:fixed; background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; z-index:10001; min-width:220px; box-shadow:0 16px 40px rgba(0,0,0,.38);';
 
   const header = document.createElement('div');
   header.textContent = `Add ${state.selectedTracks.size} songs to playlist`;
-  header.style.marginBottom = '8px';
-  header.style.fontWeight = 'bold';
+  header.style.cssText = 'margin-bottom:8px; color:var(--text-primary); font-size:11px; font-weight:600;';
   picker.appendChild(header);
 
   for (const pl of state.playlists) {
     const btn = document.createElement('button');
+    btn.type = 'button';
     btn.textContent = pl.name;
-    btn.style.cssText = 'display:block; width:100%; background:none; border:none; padding:6px; cursor:pointer;';
+    btn.style.cssText = 'display:block; width:100%; background:transparent; color:var(--text-secondary); border:0; border-radius:6px; padding:8px; cursor:pointer; text-align:left; font:11px var(--font-ui);';
+    btn.addEventListener('mouseenter', () => {
+      btn.style.background = 'var(--surface-2)';
+      btn.style.color = 'var(--text-primary)';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--text-secondary)';
+    });
     btn.addEventListener('click', () => {
       const newTracks = Array.from(state.selectedTracks).filter(id => !pl.tracks.includes(id));
       pl.tracks.push(...newTracks);
       saveSettings();
-      picker.remove();
+      close();
     });
     picker.appendChild(btn);
   }
+
   const newBtn = document.createElement('button');
+  newBtn.type = 'button';
   newBtn.textContent = '+ Create new playlist';
-  newBtn.style.marginTop = '8px';
-  newBtn.style.color = 'var(--accent)';
+  newBtn.style.cssText = 'display:block; width:100%; margin-top:6px; padding:8px; border:0; border-top:1px solid var(--border); background:transparent; color:var(--accent); cursor:pointer; text-align:left; font:11px var(--font-ui);';
   newBtn.addEventListener('click', () => {
-    picker.remove();
+    close();
     showPlaylistModal();
   });
   picker.appendChild(newBtn);
+
   document.body.appendChild(picker);
-  const close = (e) => { if (!picker.contains(e.target)) picker.remove(); };
-  setTimeout(() => document.addEventListener('click', close), 0);
+
+  const anchorRect = contextMenu.getBoundingClientRect();
+  const pickerRect = picker.getBoundingClientRect();
+  const margin = 8;
+  let left = anchorRect.right + margin;
+  let top = anchorRect.top;
+
+  if (left + pickerRect.width > window.innerWidth - margin) {
+    left = anchorRect.left - pickerRect.width - margin;
+  }
+  if (top + pickerRect.height > window.innerHeight - margin) {
+    top = window.innerHeight - pickerRect.height - margin;
+  }
+
+  left = Math.max(margin, left);
+  top = Math.max(margin, top);
+  picker.style.left = `${left}px`;
+  picker.style.top = `${top}px`;
+
+  const close = () => {
+    picker.remove();
+    document.removeEventListener('click', onDocumentClick);
+  };
+  const onDocumentClick = (e) => {
+    if (!picker.contains(e.target)) close();
+  };
+  setTimeout(() => document.addEventListener('click', onDocumentClick), 0);
 }
 
 // ——— SELECTION MODE ———
