@@ -2334,3 +2334,239 @@ html, body {
   object-fit: contain;
   padding: 7px;
 }
+
+
+/* ——— V3 SHELL OVERRIDES ———
+   Final layout rules keep the navigation horizontal and the player persistent
+   regardless of the legacy desktop-player/media-query rules above. */
+#app {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  padding-top: var(--titlebar-h) !important;
+  padding-bottom: 76px !important;
+}
+
+#sidebar {
+  display: flex !important;
+  flex: 0 0 58px !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 24px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 24px !important;
+  border-right: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: rgba(17,17,17,0.72) !important;
+  backdrop-filter: blur(18px) !important;
+  overflow: visible !important;
+  z-index: 20 !important;
+}
+
+#nav {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+
+.nav-btn {
+  width: auto !important;
+  padding: 8px 13px !important;
+  border-radius: 20px !important;
+  text-align: center !important;
+}
+
+.sidebar-section-label,
+#sidebar-spacer,
+#now-playing-card { display: none !important; }
+
+#sidebar-footer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-footer-btn,
+#folder-btn {
+  width: auto !important;
+  white-space: nowrap !important;
+  padding: 7px 9px !important;
+  border-radius: 18px !important;
+}
+
+#folder-btn {
+  border: none !important;
+  background: none !important;
+}
+
+#content {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  background: var(--bg) !important;
+}
+
+#player-panel {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 76px !important;
+  min-height: 76px !important;
+  display: grid !important;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(320px, 1.8fr) minmax(180px, .9fr) !important;
+  align-items: center !important;
+  gap: 20px !important;
+  padding: 10px 22px !important;
+  border-left: none !important;
+  border-top: 1px solid var(--border) !important;
+  background: rgba(20,20,20,.9) !important;
+  backdrop-filter: blur(24px) !important;
+  overflow: visible !important;
+  z-index: 900 !important;
+}
+
+#art-container {
+  width: 54px !important;
+  height: 54px !important;
+  margin: 0 !important;
+}
+
+#art-glow { display: none !important; }
+
+#art-frame {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35) !important;
+}
+
+#player-info {
+  position: absolute !important;
+  left: 88px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: min(260px, calc(33vw - 100px)) !important;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+#player-title {
+  font-family: var(--font-ui) !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+}
+
+#player-artist {
+  font-size: 11px !important;
+  margin-top: 0 !important;
+}
+
+#player-album { display: none !important; }
+
+#seek-container {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(120px, 1fr) 34px !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+#controls {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  transform: translateY(17px) !important;
+}
+
+#btn-play {
+  width: 38px !important;
+  height: 38px !important;
+  margin: 0 4px !important;
+}
+
+#volume-row {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  justify-content: flex-end !important;
+  margin: 0 !important;
+}
+
+#queue-section {
+  position: absolute !important;
+  right: 20px !important;
+  top: -34px !important;
+  width: auto !important;
+}
+
+#queue-list {
+  position: absolute !important;
+  right: 0 !important;
+  bottom: 42px !important;
+  width: 300px !important;
+  max-height: 360px !important;
+}
+
+.light #sidebar {
+  background: rgba(255,255,255,.84) !important;
+  border-bottom-color: var(--border) !important;
+  border-right: none !important;
+}
+
+.light #player-panel {
+  background: rgba(255,255,255,.88) !important;
+  border-left: none !important;
+}
+
+@media (max-width: 900px) {
+  #sidebar { gap: 10px !important; padding: 0 14px !important; }
+  #sidebar-brand-copy { display: none !important; }
+  .nav-btn { padding: 8px 9px !important; }
+  .nav-btn svg { display: none !important; }
+  #player-panel {
+    grid-template-columns: minmax(180px, 1fr) minmax(260px, 1.5fr) minmax(120px, .7fr) !important;
+    gap: 10px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  #player-info { left: 76px !important; width: min(220px, 28vw) !important; }
+  #volume-row { max-width: 150px !important; margin-left: auto !important; }
+}
+
+@media (max-width: 650px) {
+  #sidebar { flex-basis: 52px !important; }
+  .nav-btn { padding: 8px !important; }
+  .nav-btn:not(.active) { font-size: 0 !important; }
+  .nav-btn svg { display: block !important; }
+  #sidebar-footer { display: none !important; }
+  #player-panel {
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 8px 10px !important;
+    grid-template-columns: 1fr auto !important;
+  }
+  #app { padding-bottom: 68px !important; }
+  #art-frame, #art-container { width: 46px !important; height: 46px !important; }
+  #player-info { left: 64px !important; width: min(170px, 35vw) !important; }
+  #seek-container { display: none !important; }
+  #controls { grid-column: 2 !important; grid-row: 1 !important; transform: none !important; width: auto !important; }
+  #controls #btn-shuffle, #controls #btn-repeat { display: none !important; }
+  #volume-row, #queue-section { display: none !important; }
+}
