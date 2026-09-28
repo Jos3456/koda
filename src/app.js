@@ -51,13 +51,9 @@ const timeCurrent  = $('time-current');
 const timeTotal    = $('time-total');
 const seekBar      = $('seek-bar');
 const seekFill     = $('seek-fill');
-const volBar       = $('volume-bar');
-const volFill      = $('vol-fill');
 const btnPlay      = $('btn-play');
 const iconPlay     = $('icon-play');
 const iconPause    = $('icon-pause');
-const iconVol      = $('icon-vol');
-const iconMute     = $('icon-mute');
 const btnShuffle   = $('btn-shuffle');
 const btnRepeat    = $('btn-repeat');
 const libraryView  = $('library-view');
@@ -70,10 +66,9 @@ const loadingText  = $('loading-text');
 const viewCount    = $('view-count');
 const searchInput  = $('search-input');
 const searchClear  = $('search-clear');
-const npCard       = $('now-playing-card');
-const npArt        = $('np-art');
-const npTitle      = $('np-title');
-const npArtist     = $('np-artist');
+const playerPanel  = $('player-panel');
+const playerAdd    = $('player-add');
+const playerInfoBtn = $('player-info-btn');
 const queueList    = $('queue-list');
 const queueToggle  = $('queue-toggle');
 const selectionModeBtn = $('selection-mode-btn');
@@ -113,8 +108,6 @@ async function init() {
   else document.body.classList.remove('light');
 
   audio.volume = state.volume;
-  volBar.value = state.volume;
-  updateVolFill();
   applySettings();
   updateLayoutToggleButtons();
   updatePageToolbar();
@@ -1216,18 +1209,13 @@ function loadTrack(track) {
     if (state.settings.dynamicTheme) {
       extractAndApplyTheme(displayArt);
     }
-    npArt.src = displayArt;
-    npArt.classList.remove('hidden');
   } else {
     artImg.classList.add('hidden');
     artEmpty.classList.remove('hidden');
     resetTheme();
-    npArt.classList.add('hidden');
   }
 
-  npTitle.textContent = track.title || '—';
-  npArtist.textContent = track.artist || '—';
-  npCard.classList.remove('hidden');
+  if (playerPanel) playerPanel.classList.add('has-track');
 
   updateActiveRows();
   renderQueueList();
@@ -1369,31 +1357,6 @@ seekBar.addEventListener('input', () => {
     audio.currentTime = pct * audio.duration;
     seekFill.style.width = `${seekBar.value}%`;
   }
-});
-
-volBar.addEventListener('input', () => {
-  state.volume = parseFloat(volBar.value);
-  audio.volume = state.volume;
-  state.muted = false;
-  audio.muted = false;
-  updateVolFill();
-  updateVolIcon();
-});
-
-function updateVolFill() {
-  volFill.style.width = `${state.muted ? 0 : state.volume * 100}%`;
-}
-
-function updateVolIcon() {
-  iconVol.classList.toggle('hidden', state.muted || state.volume === 0);
-  iconMute.classList.toggle('hidden', !state.muted && state.volume > 0);
-}
-
-$('btn-mute').addEventListener('click', () => {
-  state.muted = !state.muted;
-  audio.muted = state.muted;
-  updateVolFill();
-  updateVolIcon();
 });
 
 btnShuffle.addEventListener('click', () => {
@@ -2391,23 +2354,31 @@ function bindEvents() {
 
   selectionModeBtn.addEventListener('click', toggleSelectionMode);
 
-  npCard.addEventListener('click', (e) => {
-    if (e.target.closest('.np-action-btn')) return;
-    if (state.currentTrack) showNowPlayingExpanded();
-  });
+  // Clicking the empty/player area opens the expanded now-playing view.
+  if (playerPanel) {
+    playerPanel.addEventListener('click', (e) => {
+      if (!state.currentTrack) return;
+      if (e.target.closest('#seek-container, #player-actions, #queue-list')) return;
+      showNowPlayingExpanded();
+    });
+  }
 
-  const npMenuBtn = document.createElement('button');
-  npMenuBtn.className = 'np-menu-btn';
-  npMenuBtn.type = 'button';
-  npMenuBtn.title = 'More options';
-  npMenuBtn.setAttribute('aria-label', 'More options');
-  npMenuBtn.textContent = '⋯';
-  npCard.appendChild(npMenuBtn);
-  npMenuBtn.addEventListener('click', (e) => {
+  playerAdd?.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (state.currentTrack) showNowPlayingMenu(e, state.currentTrack);
+    if (state.currentTrack) showPlaylistPicker(state.currentTrack, playerAdd);
   });
 
+  playerInfoBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (state.currentTrack) showTrackDetails(state.currentTrack);
+  });
+
+  queueToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.queueOpen = !state.queueOpen;
+    queueList.classList.toggle('hidden', !state.queueOpen);
+    renderQueueList();
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT') return;
@@ -2415,8 +2386,6 @@ function bindEvents() {
       case 'Space': e.preventDefault(); togglePlay(); break;
       case 'ArrowRight': if (e.metaKey || e.ctrlKey) nextTrack(); else audio.currentTime += 5; break;
       case 'ArrowLeft': if (e.metaKey || e.ctrlKey) prevTrack(); else audio.currentTime -= 5; break;
-      case 'ArrowUp': state.volume = Math.min(1, state.volume + 0.05); audio.volume = state.volume; volBar.value = state.volume; updateVolFill(); break;
-      case 'ArrowDown': state.volume = Math.max(0, state.volume - 0.05); audio.volume = state.volume; volBar.value = state.volume; updateVolFill(); break;
     }
   });
 }
