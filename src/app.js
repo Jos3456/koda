@@ -117,6 +117,7 @@ async function init() {
   volBar.value = state.volume;
   updateVolFill();
   applySettings();
+  updateLayoutToggleButtons();
 
   if (state.folderPath) {
     await loadFolder(state.folderPath);
@@ -1522,6 +1523,12 @@ async function saveSettings() {
   });
 }
 
+function updateLayoutToggleButtons() {
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.layout === state.layout);
+  });
+}
+
 function switchView(view) {
   state.currentView = view;
   document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1536,8 +1543,7 @@ function switchView(view) {
 document.querySelectorAll('.view-toggle').forEach(btn => {
   btn.addEventListener('click', () => {
     state.layout = btn.dataset.layout;
-    document.querySelectorAll('.view-toggle').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    updateLayoutToggleButtons();
     saveSettings();
     renderCurrentView();
   });
