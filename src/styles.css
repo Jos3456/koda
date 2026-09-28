@@ -2683,30 +2683,18 @@ html, body {
   backdrop-filter: blur(22px) !important;
   border: none !important;
   z-index: 1000 !important;
-}
-
-#titlebar-drag {
-  position: absolute !important;
-  inset: 0 !important;
-  pointer-events: auto !important;
   -webkit-app-region: drag !important;
 }
 
 #app-header {
-  position: relative !important;
-  z-index: 2 !important;
   width: 100% !important;
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
   gap: 28px !important;
   padding: 0 132px 0 20px !important;
-  pointer-events: none !important;
-}
-
-#sidebar-brand,
-#nav {
-  pointer-events: auto !important;
+  min-width: 0 !important;
+  -webkit-app-region: no-drag !important;
 }
 
 #sidebar-brand {
@@ -2716,9 +2704,11 @@ html, body {
   flex: 0 0 34px !important;
   width: 34px !important;
   height: 34px !important;
+  -webkit-app-region: no-drag !important;
 }
 
 #sidebar-brand-logo {
+  display: block !important;
   width: 30px !important;
   height: 30px !important;
   border-radius: 8px !important;
@@ -2728,17 +2718,21 @@ html, body {
   display: flex !important;
   flex: 1 1 auto !important;
   align-items: center !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   gap: 4px !important;
   min-width: 0 !important;
+  height: 100% !important;
+  -webkit-app-region: no-drag !important;
 }
 
 .nav-btn {
   flex: 0 0 auto !important;
   width: auto !important;
+  height: 36px !important;
   padding: 7px 12px !important;
   border-radius: 18px !important;
   white-space: nowrap !important;
+  -webkit-app-region: no-drag !important;
 }
 
 #window-controls {
@@ -2770,27 +2764,47 @@ html, body {
     gap: 12px !important;
     padding: 0 126px 0 14px !important;
   }
-  #nav { justify-content: flex-start !important; overflow: hidden !important; }
-  .nav-btn { padding: 7px 9px !important; }
+  #nav {
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+  }
+  .nav-btn {
+    padding: 7px 9px !important;
+  }
 }
 
 @media (max-width: 650px) {
   :root { --titlebar-h: 52px; }
+
   #app-header {
     gap: 8px !important;
     padding: 0 122px 0 10px !important;
   }
+
   #sidebar-brand {
     flex-basis: 30px !important;
     width: 30px !important;
   }
-  #sidebar-brand-logo { width: 28px !important; height: 28px !important; }
-  #nav { justify-content: flex-start !important; }
+
+  #sidebar-brand-logo {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  #nav {
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+  }
+
   .nav-btn {
     padding: 7px !important;
   }
+
   .nav-btn:not(.active) {
     font-size: 0 !important;
   }
-  .nav-btn svg { display: block !important; }
+
+  .nav-btn svg {
+    display: block !important;
+  }
 }
