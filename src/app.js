@@ -669,8 +669,7 @@ function renderModernCompact(tracks, container) {
     row.innerHTML = `
       ${state.selectionMode ? '<span class="compact-check"><input type="checkbox" class="song-checkbox" data-id="' + track.id + '" ' + (state.selectedTracks.has(track.id) ? 'checked' : '') + '></span>' : ''}
       <span class="compact-art-wrap">${artMarkup}<span class="compact-playing-bars" aria-hidden="true"><i></i><i></i><i></i></span></span>
-      <span class="compact-main"><strong>${esc(track.title)}</strong><small>${esc(track.artist)}</small></span>
-      <span class="compact-album">${esc(track.album)}</span>
+      <span class="compact-main"><strong>${esc(track.title)}</strong></span>
       <span class="compact-duration">${formatDuration(track.duration)}</span>
       ${state.detailContext?.type === 'playlist' ? '<span class="compact-remove"><button type="button" class="playlist-remove-song" aria-label="Remove from playlist" title="Remove from playlist">×</button></span>' : ''}
     `;
