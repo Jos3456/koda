@@ -106,6 +106,14 @@ html, body {
 /* ——— BACKGROUND ——— */
 #bg-layer {
   position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--accent) 22%, transparent) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 82% 30%, color-mix(in srgb, var(--accent) 18%, transparent) 0 2px, transparent 2.5px),
+    linear-gradient(135deg, transparent 0 48%, color-mix(in srgb, var(--accent) 10%, transparent) 49% 50%, transparent 51% 100%),
+    linear-gradient(45deg, transparent 0 48%, color-mix(in srgb, var(--accent) 8%, transparent) 49% 50%, transparent 51% 100%);
+  background-size: 170px 170px, 240px 240px, 120px 120px, 150px 150px;
+  background-position: 0 0, 40px 70px, 20px 10px, 80px 40px;
+  transition: background-image var(--transition-slow), background var(--transition-slow);
   pointer-events: none;
   transition: background var(--transition-slow);
 }
@@ -122,6 +130,7 @@ html, body {
 
 #bg-layer::after {
   content: '';
+
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 60% 50% at 75% 20%, var(--accent-glow), transparent 65%);
   transition: var(--transition-slow);
@@ -729,9 +738,9 @@ html, body {
 
 /* Light theme */
 .light {
-  --bg: #ffdab9;
-  --bg-2: #fce8cf;
-  --bg-3: #f5dbb1;
+  --bg: #ffffff;
+  --bg-2: #fafafa;
+  --bg-3: #f2f2f2;
   --surface: rgba(0,0,0,0.04);
   --surface-2: rgba(0,0,0,0.08);
   --border: rgba(0,0,0,0.1);
@@ -743,7 +752,12 @@ html, body {
 .light #titlebar { background: rgba(255,218,185,0.9); backdrop-filter: blur(20px); border-bottom-color: var(--border); }
 .light #sidebar { background: rgba(255,218,185,0.6); border-right-color: var(--border); }
 .light #player-panel { background: rgba(255,218,185,0.5); }
-.light #bg-layer::after { opacity: 0.2; }
+.light #bg-layer { opacity: 1; }
+.light #bg-layer::before { opacity: 0.025; }
+.light #bg-layer::after { opacity: 0.12; }
+.light #titlebar { background: rgba(255,255,255,0.92); }
+.light #sidebar { background: rgba(255,255,255,0.84); }
+.light #player-panel { background: rgba(255,255,255,0.88); }
 .light .song-row.active td { background: rgba(0,0,0,0.05); }
 .light .grid-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
 
@@ -2128,3 +2142,60 @@ html, body {
   color: #111;
   font-weight: 600;
 }
+
+
+/* ===== MODERN COMPACT SONG VIEW ===== */
+.modern-compact-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
+.modern-compact-row {
+  width: 100%; min-height: 58px; display: grid;
+  grid-template-columns: auto 46px minmax(180px, 1.6fr) minmax(120px, 1fr) 64px auto;
+  align-items: center; gap: 12px; padding: 6px 10px;
+  border: 0; border-radius: var(--radius-sm); background: transparent;
+  color: var(--text-primary); text-align: left; font: inherit; cursor: pointer;
+}
+.modern-compact-row:hover { background: var(--surface); }
+.modern-compact-row.active { background: var(--accent-dim); }
+.compact-art-wrap { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
+.compact-art { width: 46px; height: 46px; object-fit: cover; border-radius: 5px; display: block; }
+.compact-art-placeholder { display:flex; align-items:center; justify-content:center; background:var(--bg-3); color:var(--text-muted); font-size:18px; }
+.compact-main { min-width: 0; display:flex; flex-direction:column; gap:2px; }
+.compact-main strong, .compact-main small, .compact-album { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.compact-main strong { font-size:13px; font-weight:600; }
+.compact-main small, .compact-album, .compact-duration { color:var(--text-secondary); font-size:11px; }
+.compact-duration { text-align:right; font-variant-numeric:tabular-nums; }
+.compact-playing-bars { position:absolute; inset:0; display:none; align-items:flex-end; justify-content:center; gap:2px; padding-bottom:7px; background:rgba(0,0,0,.25); border-radius:5px; }
+.modern-compact-row.is-playing .compact-playing-bars { display:flex; }
+.compact-playing-bars i { width:3px; height:8px; background:var(--accent); border-radius:2px; animation:bar-bounce .7s ease-in-out infinite alternate; }
+.compact-playing-bars i:nth-child(2){animation-delay:.15s}.compact-playing-bars i:nth-child(3){animation-delay:.3s}
+.compact-check { display:flex; align-items:center; }
+.compact-remove { display:flex; align-items:center; justify-content:center; }
+.compact-remove .playlist-remove-song { width:26px; height:26px; border:0; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:50%; }
+.compact-remove .playlist-remove-song:hover { color:var(--text-primary); background:var(--surface-2); }
+@media (max-width: 850px) {
+  .modern-compact-row { grid-template-columns: auto 46px minmax(150px,1fr) 64px auto; }
+  .compact-album { display:none; }
+}
+
+/* Modern add-songs modal */
+#add-songs-modal .add-songs-content { border:1px solid var(--border-2); background:var(--bg-2); }
+#add-songs-modal .add-songs-header { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; background:transparent; }
+#add-songs-modal .add-songs-header h3 { margin:0; font-size:18px; }
+#add-songs-modal .add-songs-header button { width:30px; height:30px; border:0; border-radius:50%; background:var(--surface); color:var(--text-secondary); cursor:pointer; }
+#add-songs-modal .add-songs-header button:hover { color:var(--text-primary); background:var(--surface-2); }
+#add-songs-modal .add-songs-list { padding:10px 12px 14px; }
+.add-song-option { display:grid; grid-template-columns:20px 42px minmax(0,1fr) 20px; align-items:center; gap:11px; padding:8px 10px; border-radius:8px; cursor:pointer; }
+.add-song-option:hover { background:var(--surface); }
+.add-song-option input { accent-color:var(--accent); }
+.add-song-art { width:42px; height:42px; border-radius:5px; overflow:hidden; background:var(--bg-3); display:flex; align-items:center; justify-content:center; color:var(--text-muted); }
+.add-song-art img { width:100%; height:100%; object-fit:cover; }
+.add-song-info { min-width:0; display:flex; flex-direction:column; gap:2px; }
+.add-song-info strong, .add-song-info small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.add-song-info strong { font-size:12px; font-weight:600; }
+.add-song-info small { font-size:10px; color:var(--text-secondary); }
+.add-song-check { opacity:0; color:var(--accent); font-weight:700; }
+.add-song-option:has(input:checked) { background:var(--accent-dim); }
+.add-song-option:has(input:checked) .add-song-check { opacity:1; }
+.add-songs-empty { padding:40px 20px; text-align:center; color:var(--text-secondary); }
+#add-songs-modal .add-songs-footer { padding:14px 20px; }
+#add-songs-modal .add-songs-footer button { min-width:92px; border:1px solid var(--border); }
+#confirm-add-songs { border-color:transparent !important; }
