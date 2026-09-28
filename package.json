@@ -12,11 +12,11 @@
     "appId": "com.koda.player",
     "productName": "Koda",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "public/assets/logos"
     },
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,
@@ -27,9 +27,11 @@
     "files": [
       "src/**/*",
       "assets/**/*",
+      "public/**/*",
       "node_modules/**/*",
       "package.json"
-    ]
+    ],
+    "icon": "koda-512x512.png"
   },
   "keywords": [
     "music",
