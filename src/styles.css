@@ -2153,10 +2153,11 @@ html, body {
 .modern-compact-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
 .modern-compact-row {
   width: 100%; min-height: 60px; display: grid;
-  grid-template-columns: auto 46px minmax(240px, 2.4fr) minmax(70px, .55fr) 64px auto;
-  align-items: center; gap: 11px; padding: 7px 10px;
+  grid-template-columns: 24px 46px minmax(0, 1fr) minmax(80px, 120px) 52px 28px;
+  align-items: center; gap: 10px; padding: 7px 10px;
   border: 0; border-radius: var(--radius-sm); background: transparent;
   color: var(--text-primary); text-align: left; font: inherit; cursor: pointer;
+  overflow: hidden;
 }
 .modern-compact-row:hover { background: var(--surface); }
 .modern-compact-row.active { background: var(--accent-dim); }
@@ -2178,8 +2179,13 @@ html, body {
 .compact-remove .playlist-remove-song { width:26px; height:26px; border:0; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:50%; }
 .compact-remove .playlist-remove-song:hover { color:var(--text-primary); background:var(--surface-2); }
 @media (max-width: 850px) {
-  .modern-compact-row { grid-template-columns: auto 46px minmax(180px,1fr) 64px auto; }
+  .modern-compact-row { grid-template-columns: 24px 46px minmax(0,1fr) 52px 28px; }
   .compact-album { display:none; }
+}
+@media (max-width: 650px) {
+  .modern-compact-row { grid-template-columns: 24px 42px minmax(0,1fr) 48px 24px; gap: 8px; }
+  .compact-art-wrap, .compact-art { width: 42px; height: 42px; }
+  .compact-main strong { font-size: 13px; }
 }
 
 /* Modern add-songs modal */
@@ -2215,3 +2221,10 @@ html, body {
   background: color-mix(in srgb, var(--accent) 16%, white);
   border-color: var(--accent);
 }
+
+/* Keep the song title as the primary, always-visible field in MCV. */
+.modern-compact-row .compact-main { min-width: 0; width: 100%; }
+.modern-compact-row .compact-main strong { display: block; min-width: 0; color: var(--text-primary); font-size: 14px; font-weight: 650; }
+.modern-compact-row .compact-main small { display: block; min-width: 0; }
+.modern-compact-row .compact-album { min-width: 0; max-width: 120px; }
+.modern-compact-row .compact-duration { min-width: 0; }
