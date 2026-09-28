@@ -1678,25 +1678,30 @@ html, body {
 }
 .sidebar-footer-btn {
   width: 100%;
-  min-height: 34px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   gap: 9px;
   padding: 0 10px;
-  border: 1px solid transparent;
+  border: 1px solid var(--accent-dim);
   border-radius: 8px;
-  background: transparent;
-  color: var(--text-muted);
+  background: var(--accent-dim);
+  color: var(--accent);
   font-family: var(--font-ui);
   font-size: 11px;
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
 }
 .sidebar-footer-btn:hover {
-  color: var(--text-primary);
-  background: var(--surface);
-  border-color: var(--border);
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.sidebar-footer-icon {
+  color: inherit;
 }
 .sidebar-footer-icon {
   width: 17px;
@@ -2147,9 +2152,9 @@ html, body {
 /* ===== MODERN COMPACT SONG VIEW ===== */
 .modern-compact-list { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
 .modern-compact-row {
-  width: 100%; min-height: 58px; display: grid;
-  grid-template-columns: auto 46px minmax(180px, 1.6fr) minmax(120px, 1fr) 64px auto;
-  align-items: center; gap: 12px; padding: 6px 10px;
+  width: 100%; min-height: 60px; display: grid;
+  grid-template-columns: auto 46px minmax(240px, 2.4fr) minmax(70px, .55fr) 64px auto;
+  align-items: center; gap: 11px; padding: 7px 10px;
   border: 0; border-radius: var(--radius-sm); background: transparent;
   color: var(--text-primary); text-align: left; font: inherit; cursor: pointer;
 }
@@ -2160,8 +2165,9 @@ html, body {
 .compact-art-placeholder { display:flex; align-items:center; justify-content:center; background:var(--bg-3); color:var(--text-muted); font-size:18px; }
 .compact-main { min-width: 0; display:flex; flex-direction:column; gap:2px; }
 .compact-main strong, .compact-main small, .compact-album { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.compact-main strong { font-size:13px; font-weight:600; }
-.compact-main small, .compact-album, .compact-duration { color:var(--text-secondary); font-size:11px; }
+.compact-main strong { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.25; }
+.compact-main small { color:var(--text-secondary); font-size:11px; }
+.compact-album, .compact-duration { color:var(--text-secondary); font-size:10.5px; }
 .compact-duration { text-align:right; font-variant-numeric:tabular-nums; }
 .compact-playing-bars { position:absolute; inset:0; display:none; align-items:flex-end; justify-content:center; gap:2px; padding-bottom:7px; background:rgba(0,0,0,.25); border-radius:5px; }
 .modern-compact-row.is-playing .compact-playing-bars { display:flex; }
@@ -2172,7 +2178,7 @@ html, body {
 .compact-remove .playlist-remove-song { width:26px; height:26px; border:0; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:50%; }
 .compact-remove .playlist-remove-song:hover { color:var(--text-primary); background:var(--surface-2); }
 @media (max-width: 850px) {
-  .modern-compact-row { grid-template-columns: auto 46px minmax(150px,1fr) 64px auto; }
+  .modern-compact-row { grid-template-columns: auto 46px minmax(180px,1fr) 64px auto; }
   .compact-album { display:none; }
 }
 
@@ -2199,3 +2205,13 @@ html, body {
 #add-songs-modal .add-songs-footer { padding:14px 20px; }
 #add-songs-modal .add-songs-footer button { min-width:92px; border:1px solid var(--border); }
 #confirm-add-songs { border-color:transparent !important; }
+
+.light .sidebar-footer-btn {
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--accent);
+}
+.light .sidebar-footer-btn:hover {
+  background: color-mix(in srgb, var(--accent) 16%, white);
+  border-color: var(--accent);
+}
