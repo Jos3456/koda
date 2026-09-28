@@ -2843,6 +2843,7 @@ html, body {
     align-items: flex-start;
     flex-direction: column;
     gap: 12px;
+    padding: 0 16px;
   }
 
   #page-actions {
@@ -2860,6 +2861,7 @@ html, body {
 #page-toolbar {
   min-height: 38px;
   margin-bottom: 16px;
+  padding: 0 28px;
 }
 
 #page-heading {
