@@ -51,10 +51,6 @@ const timeCurrent  = $('time-current');
 const timeTotal    = $('time-total');
 const seekBar      = $('seek-bar');
 const seekFill     = $('seek-fill');
-const btnPlay      = $('btn-play');
-const iconPlay     = $('icon-play');
-const iconPause    = $('icon-pause');
-const btnShuffle   = $('btn-shuffle');
 const btnRepeat    = $('btn-repeat');
 const libraryView  = $('library-view');
 const detailView   = $('detail-view');
@@ -1254,8 +1250,6 @@ function togglePlay() {
 
 audio.addEventListener('play', () => {
   state.isPlaying = true;
-  iconPlay.classList.add('hidden');
-  iconPause.classList.remove('hidden');
   artGlow.style.opacity = '0.4';
   updateActiveRows();
   updateExpandedNowPlaying();
@@ -1263,8 +1257,6 @@ audio.addEventListener('play', () => {
 
 audio.addEventListener('pause', () => {
   state.isPlaying = false;
-  iconPlay.classList.remove('hidden');
-  iconPause.classList.add('hidden');
   artGlow.style.opacity = '0';
   updateActiveRows();
   updateExpandedNowPlaying();
@@ -1316,8 +1308,6 @@ function handleTrackEnd() {
     }
 
     state.isPlaying = false;
-    iconPlay.classList.remove('hidden');
-    iconPause.classList.add('hidden');
     artGlow.style.opacity = '0';
     updateActiveRows();
     updateExpandedNowPlaying();
@@ -1371,9 +1361,8 @@ btnShuffle.addEventListener('click', () => {
     state.queueIndex = 0;
     renderQueueList();
   }
-  updateShuffleBtn();
-  saveSettings();
-});
+*/
+
 
 btnRepeat.addEventListener('click', () => {
   const modes = ['none', 'all', 'one'];
@@ -1384,7 +1373,8 @@ btnRepeat.addEventListener('click', () => {
 });
 
 function updateShuffleBtn() {
-  btnShuffle.classList.toggle('active', state.shuffle);
+  const shuffleButton = document.getElementById('expanded-shuffle');
+  if (shuffleButton) shuffleButton.classList.toggle('active', state.shuffle);
   const expandedShuffle = document.getElementById('expanded-shuffle');
   if (expandedShuffle) expandedShuffle.classList.toggle('active', state.shuffle);
 }
