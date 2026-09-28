@@ -1372,8 +1372,6 @@ btnRepeat.addEventListener('click', () => {
 });
 
 function updateShuffleBtn() {
-  const shuffleButton = document.getElementById('expanded-shuffle');
-  if (shuffleButton) shuffleButton.classList.toggle('active', state.shuffle);
   const expandedShuffle = document.getElementById('expanded-shuffle');
   if (expandedShuffle) expandedShuffle.classList.toggle('active', state.shuffle);
 }
@@ -2118,8 +2116,13 @@ function showNowPlayingExpanded() {
     });
     document.getElementById('expanded-shuffle').addEventListener('click', (e) => {
       e.stopPropagation();
-      btnShuffle.click();
-      updateExpandedNowPlaying();
+      state.shuffle = !state.shuffle;
+      if (state.shuffle && state.currentTrack && state.queue.length) {
+        const remaining = state.queue.filter(t => t.id !== state.currentTrack.id);
+        for (let i = remaining.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [remaining[i], remaining[j]] = [remaining[j], remaining[i]]; }
+        state.queue = [state.currentTrack, ...remaining]; state.queueIndex = 0; renderQueueList();
+      }
+      updateShuffleBtn(); saveSettings(); updateExpandedNowPlaying();
     });
     document.getElementById('expanded-repeat').addEventListener('click', (e) => {
       e.stopPropagation();
