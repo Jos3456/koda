@@ -553,7 +553,7 @@ function renderSongList(tracks, container) {
     renderSongGrid(tracks, container);
     return;
   }
-  if (state.layout === 'compact' && (state.currentView === 'songs' || state.currentView === 'favourites' || state.detailContext?.type === 'playlist')) {
+  if (state.layout === 'compact' && (state.currentView === 'songs' || state.currentView === 'favourites' || ['playlist', 'album', 'artist', 'genre'].includes(state.detailContext?.type))) {
     renderModernCompact(tracks, container);
     return;
   }
