@@ -245,6 +245,7 @@ async function loadFolder(folderPath) {
     let processed = 0;
     const batchSize = 20;
     const usedIds = new Set();
+    const hasSavedTrackIdMap = Object.keys(state.trackIdMap).length > 0;
 
     for (let i = 0; i < files.length; i += batchSize) {
       const batch = files.slice(i, i + batchSize);
@@ -255,7 +256,12 @@ async function loadFolder(folderPath) {
         let id = state.trackIdMap[filePath];
 
         if (!id) {
-          id = `track-${hashString(filePath)}`;
+          // Preserve legacy IDs on the first migration so existing
+          // favourites/playlists keep working. New files thereafter get
+          // deterministic path-based IDs.
+          id = hasSavedTrackIdMap
+            ? `track-${hashString(filePath)}`
+            : `track-${i + idx}`;
         }
 
         // Guard against an old/corrupt mapping producing duplicate IDs.
