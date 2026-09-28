@@ -1065,9 +1065,10 @@ function showRenamePlaylistModal(playlistId) {
       return;
     }
     playlist.name = nextName;
-    saveSettings();
-    close();
-    openPlaylist(playlistId);
+    saveSettings().then(() => {
+      close();
+      openPlaylist(playlistId);
+    });
   };
 
   modal.querySelector('.rename-playlist-cancel').addEventListener('click', close);
@@ -1086,15 +1087,17 @@ function showRenamePlaylistModal(playlistId) {
   });
 }
 
-function deletePlaylist(playlistId) {
-  if (confirm('Delete this playlist? This action cannot be undone.')) {
-    state.playlists = state.playlists.filter(p => p.id !== playlistId);
-    saveSettings();
-    if (state.currentView === 'playlists') renderCurrentView();
-    if (state.detailContext?.type === 'playlist' && state.detailContext.id === playlistId) {
-      detailView.classList.add('hidden');
-      libraryView.classList.remove('hidden');
-    }
+async function deletePlaylist(playlistId) {
+  if (!confirm('Delete this playlist? This action cannot be undone.')) return;
+
+  state.playlists = state.playlists.filter(p => p.id !== playlistId);
+  await saveSettings();
+
+  if (state.currentView === 'playlists') renderCurrentView();
+  if (state.detailContext?.type === 'playlist' && state.detailContext.id === playlistId) {
+    detailView.classList.add('hidden');
+    libraryView.classList.remove('hidden');
+    state.detailContext = null;
   }
 }
 
@@ -1215,9 +1218,9 @@ document.getElementById('confirm-add-songs').addEventListener('click', async () 
   const playlist = state.playlists.find(p => p.id === currentPlaylistForAdd);
 
   if (playlist) {
-    const currentTracks = Array.isArray(playlist.tracks) ? playlist.tracks : [];
-    const newTracks = selected.filter(id => !currentTracks.includes(id));
-    playlist.tracks = [...currentTracks, ...newTracks];
+    // The modal represents the playlist's complete membership, so both
+    // checked and unchecked songs are persisted.
+    playlist.tracks = selected;
 
     await saveSettings();
 
