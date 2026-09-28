@@ -2664,8 +2664,8 @@ html, body {
 #titlebar-drag { min-width: 0; }
 
 
-/* ===== UNIFIED TITLEBAR + NAVIGATION ===== */
-:root { --titlebar-h: 58px; }
+/* ===== BROWSER-STYLE TITLEBAR + NAVIGATION ===== */
+:root { --titlebar-h: 52px; }
 
 #app {
   padding-top: var(--titlebar-h) !important;
@@ -2678,50 +2678,25 @@ html, body {
   right: 0 !important;
   height: var(--titlebar-h) !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
   background: rgba(17,17,17,.86) !important;
   backdrop-filter: blur(22px) !important;
   border: none !important;
   z-index: 1000 !important;
   -webkit-app-region: drag !important;
-}
-
-#app-header {
-  width: 100% !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 28px !important;
-  padding: 0 132px 0 20px !important;
-  min-width: 0 !important;
-  -webkit-app-region: no-drag !important;
-}
-
-#sidebar-brand {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 34px !important;
-  width: 34px !important;
-  height: 34px !important;
-  -webkit-app-region: no-drag !important;
-}
-
-#sidebar-brand-logo {
-  display: block !important;
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 8px !important;
+  padding: 0 !important;
 }
 
 #nav {
   display: flex !important;
-  flex: 1 1 auto !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 4px !important;
-  min-width: 0 !important;
+  gap: 2px !important;
   height: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  padding: 0 8px !important;
   -webkit-app-region: no-drag !important;
 }
 
@@ -2729,28 +2704,33 @@ html, body {
   flex: 0 0 auto !important;
   width: auto !important;
   height: 36px !important;
-  padding: 7px 12px !important;
-  border-radius: 18px !important;
+  margin: 0 !important;
+  padding: 7px 14px !important;
+  border-radius: 9px !important;
   white-space: nowrap !important;
   -webkit-app-region: no-drag !important;
 }
 
 #window-controls {
-  position: absolute !important;
-  top: 0 !important;
-  right: 0 !important;
-  z-index: 3 !important;
+  flex: 0 0 auto !important;
+  position: static !important;
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
+  margin-left: auto !important;
   -webkit-app-region: no-drag !important;
 }
 
 .wc-btn {
+  width: 46px !important;
+  height: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
   -webkit-app-region: no-drag !important;
 }
 
-#sidebar {
+#sidebar,
+#sidebar-brand {
   display: none !important;
 }
 
@@ -2760,44 +2740,26 @@ html, body {
 }
 
 @media (max-width: 900px) {
-  #app-header {
-    gap: 12px !important;
-    padding: 0 126px 0 14px !important;
-  }
   #nav {
-    justify-content: flex-start !important;
     overflow: hidden !important;
+    padding: 0 6px !important;
   }
+
   .nav-btn {
-    padding: 7px 9px !important;
+    padding: 7px 10px !important;
   }
 }
 
 @media (max-width: 650px) {
-  :root { --titlebar-h: 52px; }
-
-  #app-header {
-    gap: 8px !important;
-    padding: 0 122px 0 10px !important;
-  }
-
-  #sidebar-brand {
-    flex-basis: 30px !important;
-    width: 30px !important;
-  }
-
-  #sidebar-brand-logo {
-    width: 28px !important;
-    height: 28px !important;
-  }
+  :root { --titlebar-h: 48px; }
 
   #nav {
-    justify-content: flex-start !important;
-    overflow: hidden !important;
+    gap: 0 !important;
   }
 
   .nav-btn {
-    padding: 7px !important;
+    height: 34px !important;
+    padding: 7px 9px !important;
   }
 
   .nav-btn:not(.active) {
@@ -2806,5 +2768,10 @@ html, body {
 
   .nav-btn svg {
     display: block !important;
+    margin: 0 !important;
+  }
+
+  .wc-btn {
+    width: 40px !important;
   }
 }
