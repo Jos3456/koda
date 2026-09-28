@@ -6,6 +6,7 @@
   <title>Koda</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../public/assets/logos/koda-32x32.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
@@ -34,7 +35,7 @@
 <!-- App shell -->
 <div id="app">
 
-  <!-- LEFT SIDEBAR: Nav + Now Playing -->
+  <!-- TOP NAVIGATION -->
   <aside id="sidebar">
     <div id="sidebar-brand">
       <img id="sidebar-brand-logo" src="../public/assets/logos/koda-64x64.png" alt="Koda">
@@ -44,7 +45,6 @@
       </div>
     </div>
 
-    <div class="sidebar-section-label">Library</div>
     <nav id="nav">
       <button class="nav-btn active" data-view="songs">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -63,43 +63,18 @@
         Genres
       </button>
       <button class="nav-btn" data-view="favourites">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.07 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-  Favourites
-</button>
-  <button class="nav-btn" data-view="playlists">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Playlists
-  </button>
-  <button class="nav-btn" data-view="settings" id="nav-settings" title="Settings">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 20.4a1.65 1.65 0 0 0-1.51 1.51V22a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 20.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 16 1.65 1.65 0 0 0 2.09 14.5H2a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 3.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 6.04 4.3l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1.49-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.4 8a1.65 1.65 0 0 0 1.51 1.5H22a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 20.4 15z"/></svg>
-    Settings
-  </button>
-    </nav>
-
-    <div id="sidebar-spacer"></div>
-
-    <!-- Now Playing mini card -->
-    <div id="now-playing-card" class="hidden">
-      <div id="np-art-wrap">
-        <img id="np-art" src="" alt="">
-        <div id="np-art-placeholder">♪</div>
-      </div>
-      <div id="np-info">
-        <div id="np-title">—</div>
-        <div id="np-artist">—</div>
-      </div>
-    </div>
-
-    <div id="sidebar-footer">
-      <button id="about-btn" class="sidebar-footer-btn" type="button">
-        <span class="sidebar-footer-icon">i</span>
-        About Koda
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.07 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Favourites
       </button>
-      <button id="folder-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      Change Folder
-    </button>
-
+      <button class="nav-btn" data-view="playlists">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Playlists
+      </button>
+      <button class="nav-btn" data-view="settings" id="nav-settings" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 20.4a1.65 1.65 0 0 0-1.51 1.51V22a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 20.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 16 1.65 1.65 0 0 0 2.09 14.5H2a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 3.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 6.04 4.3l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1.49-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06A2 2 1 1 1 18.7 6.04l-.06.06A1.65 1.65 0 0 0 20.4 8a1.65 1.65 0 0 0 1.51 1.5H22a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 20.4 15z"/></svg>
+        Settings
+      </button>
+    </nav>
   </aside>
 
   <!-- MAIN CONTENT AREA -->
@@ -182,7 +157,7 @@
       <h2>Welcome to Koda</h2>
       <p>Choose a folder to load your music library.</p>
       <button id="welcome-folder-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
         Open Music Folder
       </button>
     </div>
@@ -202,9 +177,8 @@
 
   </div>
 
-  <!-- RIGHT PANEL: Player -->
+  <!-- PERSISTENT BOTTOM PLAYER -->
   <div id="player-panel">
-
     <!-- Album Art -->
     <div id="art-container">
       <div id="art-glow"></div>
@@ -273,7 +247,6 @@
       </button>
       <div id="queue-list" class="hidden"></div>
     </div>
-
   </div>
 </div>
 
