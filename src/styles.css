@@ -2938,3 +2938,456 @@ html, body {
     padding-right: 16px !important;
   }
 }
+
+
+/* ============================================================
+   KODA — FRESH UI SYSTEM
+   Shared visual language for every view.
+   Songs remains the reference surface; all other views inherit
+   the same spacing, surfaces, typography, borders and controls.
+   ============================================================ */
+
+:root {
+  --bg: #151515;
+  --bg-2: #1b1b1b;
+  --bg-3: #232323;
+  --surface: rgba(255,255,255,.055);
+  --surface-hover: rgba(255,255,255,.085);
+  --surface-2: rgba(255,255,255,.10);
+  --border: rgba(255,255,255,.09);
+  --border-2: rgba(255,255,255,.14);
+  --text-primary: #f2f2f2;
+  --text: #f2f2f2;
+  --text-secondary: #999;
+  --muted: #777;
+  --text-muted: #666;
+  --accent: #d4a85a;
+  --accent-dim: rgba(212,168,90,.13);
+  --accent-glow: rgba(212,168,90,.22);
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font-ui: 'Figtree', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, serif;
+}
+
+/* Shared controls */
+button, input, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+button:disabled { opacity: .45; cursor: default; }
+
+#content {
+  background:
+    radial-gradient(ellipse 70% 45% at 70% 0%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 70%),
+    var(--bg) !important;
+}
+
+#page-toolbar {
+  padding-top: 22px !important;
+  min-height: 60px;
+  margin-bottom: 8px !important;
+}
+#view-count {
+  color: var(--text-secondary) !important;
+}
+#page-actions {
+  gap: 7px !important;
+}
+
+/* Navigation */
+#titlebar {
+  background: rgba(18,18,18,.92) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.nav-btn {
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  font-weight: 500 !important;
+}
+.nav-btn:hover {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+.nav-btn.active {
+  color: var(--text-primary) !important;
+  background: var(--surface-hover) !important;
+}
+.nav-btn.active svg { color: var(--accent) !important; }
+
+/* Search / view controls */
+#search-wrap {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
+#search-wrap:hover { background: var(--surface-hover) !important; }
+#search-wrap:focus-within {
+  background: var(--surface-hover) !important;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border)) !important;
+  box-shadow: 0 0 0 2px var(--accent-dim) !important;
+}
+#search-input { color: var(--text-primary) !important; }
+#search-input::placeholder { color: var(--muted) !important; }
+.view-switcher .view-toggle {
+  color: var(--muted) !important;
+}
+.view-switcher .view-toggle:hover,
+.view-switcher .view-toggle.active {
+  color: var(--text-primary) !important;
+  background: var(--surface-hover) !important;
+  box-shadow: none !important;
+}
+.page-action-btn {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+.page-action-btn:hover {
+  background: var(--surface-hover) !important;
+  border-color: var(--border-2) !important;
+}
+
+/* Tables: keep the Songs-page language everywhere tracks appear */
+.songs-table { border-spacing: 0; }
+.songs-thead th {
+  color: var(--muted) !important;
+  border-bottom-color: var(--border) !important;
+  background: var(--bg) !important;
+}
+.song-row td { border: 0 !important; }
+.song-row:hover td { background: var(--surface) !important; }
+.song-row.active td { background: var(--accent-dim) !important; }
+.song-row.active .song-title { color: var(--accent) !important; }
+
+/* Grid cards */
+.grid-view {
+  gap: 14px !important;
+  padding-top: 6px !important;
+}
+.grid-card, .song-grid-card, .playlist-card {
+  border: 1px solid transparent;
+  border-radius: 11px !important;
+}
+.grid-card:hover, .song-grid-card:hover, .playlist-card:hover {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+  transform: translateY(-2px);
+}
+.grid-art, .playlist-cover {
+  border-radius: 9px !important;
+  background: var(--bg-3) !important;
+}
+.grid-name, .playlist-name {
+  color: var(--text-primary) !important;
+}
+.grid-sub, .playlist-meta {
+  color: var(--text-secondary) !important;
+}
+
+/* Detail / album / artist / genre pages */
+#detail-view {
+  padding-top: 10px !important;
+}
+#detail-back {
+  margin-bottom: 14px !important;
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+}
+#detail-back:hover {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+#detail-header {
+  gap: 18px !important;
+  padding: 4px 0 22px !important;
+  border-bottom-color: var(--border) !important;
+}
+.detail-art {
+  width: 112px !important;
+  height: 112px !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  background: var(--bg-3) !important;
+}
+.detail-meta-name {
+  color: var(--text-primary) !important;
+  font-size: 30px !important;
+}
+.detail-meta-sub {
+  color: var(--text-secondary) !important;
+}
+#detail-tracks { padding-top: 10px !important; }
+
+/* Playlists */
+.playlists-grid {
+  gap: 14px !important;
+}
+.playlist-card {
+  padding: 10px !important;
+  background: transparent !important;
+}
+.playlist-cover {
+  margin-bottom: 10px !important;
+}
+.playlist-detail-actions button,
+.playlist-action,
+.settings-action {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+.playlist-detail-actions button:hover,
+.playlist-action:hover,
+.settings-action:hover {
+  background: var(--surface-hover) !important;
+  border-color: var(--border-2) !important;
+}
+.playlist-detail-actions button:first-child {
+  background: var(--accent) !important;
+  border-color: transparent !important;
+  color: #111 !important;
+}
+
+/* Settings */
+#settings-view {
+  background: transparent !important;
+}
+.settings-page {
+  max-width: 920px !important;
+  padding: 30px 28px 60px !important;
+}
+.settings-page-header {
+  margin-bottom: 22px !important;
+}
+.settings-page-header h1 {
+  color: var(--text-primary);
+  font-size: 30px;
+}
+.settings-page-header p {
+  color: var(--text-secondary) !important;
+}
+.settings-page-grid {
+  gap: 10px !important;
+}
+.settings-page-grid .settings-section {
+  padding: 18px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 11px !important;
+}
+.settings-page-grid .settings-section:hover {
+  border-color: var(--border-2) !important;
+}
+.settings-page-grid .settings-section h3 {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+.toggle-row {
+  min-height: 42px;
+  border-top: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.toggle-row:first-of-type { border-top: 0; }
+.settings-about-mark {
+  border-radius: 10px;
+}
+
+/* Empty states */
+.koda-empty-state {
+  min-height: 420px !important;
+}
+.koda-empty-icon {
+  width: 58px !important;
+  height: 58px !important;
+  margin-bottom: 14px !important;
+  border-radius: 15px !important;
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+.koda-empty-state h2 {
+  font-size: 28px !important;
+}
+.koda-empty-state p {
+  color: var(--text-secondary) !important;
+}
+.koda-empty-action {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+.koda-empty-action:hover {
+  background: var(--surface-hover) !important;
+  border-color: var(--border-2) !important;
+}
+
+/* Modals: one consistent Koda surface */
+#playlist-modal,
+#add-songs-modal,
+#confirm-modal,
+#rename-playlist-modal,
+#context-menu {
+  font-family: var(--font-ui);
+}
+#playlist-modal,
+#add-songs-modal,
+#confirm-modal,
+#rename-playlist-modal {
+  background: rgba(0,0,0,.62) !important;
+  backdrop-filter: blur(10px) !important;
+}
+#playlist-modal .modal-content,
+#add-songs-modal .add-songs-content,
+.confirm-modal-content,
+.rename-playlist-card {
+  background: var(--bg-2) !important;
+  border: 1px solid var(--border-2) !important;
+  border-radius: 13px !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.42) !important;
+}
+#playlist-modal .modal-content {
+  padding: 22px !important;
+}
+#playlist-modal input,
+#playlist-modal select,
+.rename-playlist-input {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+}
+#playlist-modal button,
+#confirm-yes,
+#confirm-add-songs,
+.rename-playlist-save {
+  background: var(--accent) !important;
+  color: #111 !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+}
+#playlist-modal .btn-secondary,
+#confirm-no,
+#cancel-add-songs,
+.rename-playlist-cancel {
+  background: var(--surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+}
+#playlist-modal button:hover,
+#confirm-yes:hover,
+#confirm-add-songs:hover,
+.rename-playlist-save:hover {
+  filter: brightness(1.06);
+}
+
+/* Add-songs list */
+#add-songs-modal .add-songs-header {
+  border-bottom-color: var(--border) !important;
+}
+#add-songs-modal .add-songs-footer {
+  border-top-color: var(--border) !important;
+}
+.add-song-option {
+  border-radius: 8px !important;
+}
+.add-song-option:hover {
+  background: var(--surface) !important;
+}
+.add-song-option:has(input:checked) {
+  background: var(--accent-dim) !important;
+}
+
+/* Context menu */
+#context-menu {
+  background: var(--bg-2) !important;
+  border: 1px solid var(--border-2) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.38) !important;
+  padding: 5px !important;
+}
+#context-menu button {
+  color: var(--text-primary) !important;
+  border-radius: 6px !important;
+}
+#context-menu button:hover {
+  background: var(--surface-hover) !important;
+}
+
+/* Bottom player — same restrained language as Songs */
+#player-panel {
+  background: rgba(21,21,21,.94) !important;
+  border-top-color: var(--border) !important;
+  box-shadow: 0 -12px 30px rgba(0,0,0,.12) !important;
+}
+#art-frame {
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+#player-title {
+  color: var(--text-primary) !important;
+}
+#player-artist {
+  color: var(--text-secondary) !important;
+}
+.ctrl-btn {
+  color: var(--text-secondary) !important;
+}
+.ctrl-btn:hover {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+#btn-play {
+  background: var(--text-primary) !important;
+  color: var(--bg) !important;
+  box-shadow: none !important;
+}
+#btn-play:hover { transform: scale(1.04); }
+#seek-track, #vol-track {
+  background: var(--surface-2) !important;
+}
+#seek-fill {
+  background: var(--accent) !important;
+}
+
+/* Light theme keeps the same hierarchy */
+.light {
+  --bg: #f5f5f3;
+  --bg-2: #ffffff;
+  --bg-3: #e9e9e6;
+  --surface: rgba(0,0,0,.045);
+  --surface-hover: rgba(0,0,0,.07);
+  --surface-2: rgba(0,0,0,.08);
+  --border: rgba(0,0,0,.09);
+  --border-2: rgba(0,0,0,.14);
+  --text-primary: #181818;
+  --text: #181818;
+  --text-secondary: #686868;
+  --muted: #7b7b7b;
+  --text-muted: #888;
+}
+.light #content { background: var(--bg) !important; }
+.light #player-panel { background: rgba(255,255,255,.94) !important; }
+.light #titlebar { background: rgba(255,255,255,.92) !important; }
+
+/* Tight desktop rhythm */
+@media (min-width: 901px) {
+  #library-view, #detail-view {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  #page-toolbar {
+    padding-top: 16px !important;
+  }
+  .settings-page {
+    padding: 24px 16px 50px !important;
+  }
+}
