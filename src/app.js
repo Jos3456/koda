@@ -103,6 +103,8 @@ async function init() {
   if (state.lightTheme) document.body.classList.add('light');
   else document.body.classList.remove('light');
 
+  document.body.dataset.view = state.currentView;
+
   audio.volume = state.volume;
   applySettings();
   updateLayoutToggleButtons();
@@ -655,9 +657,17 @@ function getTrackArt(track) {
 }
 
 function renderSongGrid(tracks, container) {
+  const section = document.createElement('section');
+  section.className = 'songs-grid-section';
+
+  const heading = document.createElement('div');
+  heading.className = 'songs-grid-heading';
+  heading.textContent = 'Top 6';
+  section.appendChild(heading);
+
   const grid = document.createElement('div');
-  grid.className = 'grid-view';
-  tracks.forEach(track => {
+  grid.className = 'grid-view songs-grid';
+  tracks.forEach((track, index) => {
     const card = document.createElement('div');
     card.className = 'grid-card song-grid-card';
     const artDiv = document.createElement('div');
@@ -668,14 +678,8 @@ function renderSongGrid(tracks, container) {
       img.src = displayArt;
       artDiv.appendChild(img);
     } else {
-      // use placeholder icon with randomized color
-      const color = stringToHue(track.id);
-      artDiv.style.backgroundColor = `hsl(${color}, 70%, 70%)`;
-      artDiv.style.display = 'flex';
-      artDiv.style.alignItems = 'center';
-      artDiv.style.justifyContent = 'center';
-      artDiv.style.fontSize = '36px';
-      artDiv.textContent = '♪';
+      artDiv.classList.add('grid-art-placeholder');
+      artDiv.innerHTML = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
     }
     card.appendChild(artDiv);
     const nameDiv = document.createElement('div');
@@ -714,10 +718,13 @@ function renderSongGrid(tracks, container) {
       e.preventDefault();
       showContextMenu(e, track, false);
     });
+    if (index < 6) card.classList.add('songs-feature-card');
+    else card.classList.add('songs-mini-card');
     grid.appendChild(card);
   });
+  section.appendChild(grid);
   container.innerHTML = '';
-  container.appendChild(grid);
+  container.appendChild(section);
 }
 
 function stringToHue(str) {
@@ -1624,6 +1631,7 @@ function updatePageToolbar() {
 
 function switchView(view) {
   state.currentView = view;
+  document.body.dataset.view = view;
   state.detailContext = view === 'songs' || view === 'favourites' ? null : state.detailContext;
 
   document.querySelectorAll('.nav-btn').forEach(btn => {
