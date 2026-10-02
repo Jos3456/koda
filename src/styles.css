@@ -3391,3 +3391,363 @@ button:disabled { opacity: .45; cursor: default; }
     padding: 24px 16px 50px !important;
   }
 }
+
+
+/* ============================================================
+   KODA — SONGS PAGE REDESIGN
+   Visual reference: the Songs-page composition supplied by Jo.
+   ============================================================ */
+
+body[data-view="songs"] {
+  --songs-bg-top: #285d76;
+  --songs-bg-mid: #6f9697;
+  --songs-bg-bottom: #b5c7b5;
+  --songs-ink: #f5f6f5;
+  --songs-muted: rgba(245,246,245,.72);
+  --songs-soft: rgba(245,246,245,.16);
+  --songs-line: rgba(255,255,255,.28);
+}
+
+body[data-view="songs"] #titlebar {
+  background: rgba(22,72,98,.92) !important;
+  border-bottom-color: rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+body[data-view="songs"] #content {
+  background:
+    radial-gradient(ellipse 72% 45% at 48% 108%, rgba(214,226,194,.48), transparent 68%),
+    linear-gradient(180deg, var(--songs-bg-top) 0%, var(--songs-bg-mid) 56%, var(--songs-bg-bottom) 100%) !important;
+  color: var(--songs-ink);
+  overflow: hidden;
+}
+
+body[data-view="songs"] #page-toolbar {
+  min-height: 42px;
+  padding: 10px 14px 0 !important;
+  margin-bottom: 2px !important;
+}
+
+body[data-view="songs"] #view-count {
+  color: rgba(255,255,255,.78) !important;
+  font-size: 10px !important;
+  font-weight: 500;
+}
+
+body[data-view="songs"] #page-actions {
+  gap: 5px !important;
+}
+
+body[data-view="songs"] #search-wrap {
+  flex-basis: 116px;
+  max-width: 116px;
+  height: 24px;
+  padding: 0 8px;
+  gap: 5px;
+  border: 0 !important;
+  border-radius: 4px;
+  background: rgba(255,255,255,.88) !important;
+  color: #5b6363 !important;
+  box-shadow: none !important;
+}
+
+body[data-view="songs"] #search-wrap:focus-within {
+  background: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.18) !important;
+}
+
+body[data-view="songs"] #search-wrap svg {
+  display: none;
+}
+
+body[data-view="songs"] #search-input {
+  height: 22px;
+  color: #424949 !important;
+  font-size: 9px;
+}
+
+body[data-view="songs"] #search-input::placeholder {
+  color: #7b8181 !important;
+}
+
+body[data-view="songs"] .view-switcher {
+  height: 24px;
+  gap: 3px;
+}
+
+body[data-view="songs"] .view-switcher .view-toggle {
+  min-width: 27px;
+  width: 27px;
+  height: 24px;
+  border-radius: 4px;
+  color: rgba(255,255,255,.72) !important;
+}
+
+body[data-view="songs"] .view-switcher .view-toggle:hover,
+body[data-view="songs"] .view-switcher .view-toggle.active {
+  color: #fff !important;
+  background: rgba(255,255,255,.18) !important;
+}
+
+body[data-view="songs"] #selection-mode-btn {
+  display: none;
+}
+
+body[data-view="songs"] #library-view {
+  height: calc(100% - 44px);
+  padding: 0 14px 12px !important;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.42) transparent;
+}
+
+body[data-view="songs"] .songs-grid-section {
+  width: 100%;
+}
+
+body[data-view="songs"] .songs-grid-heading {
+  margin: 2px 2px 7px;
+  color: rgba(255,255,255,.94);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+body[data-view="songs"] .songs-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-flow: row;
+  gap: 10px 12px !important;
+  padding: 0 !important;
+  align-items: start;
+}
+
+body[data-view="songs"] .songs-grid-card {
+  min-width: 0;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  overflow: visible;
+  transform: none !important;
+}
+
+body[data-view="songs"] .songs-grid-card:hover {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transform: translateY(-1px) !important;
+}
+
+body[data-view="songs"] .songs-feature-card {
+  grid-column: span 2;
+}
+
+body[data-view="songs"] .songs-mini-card {
+  grid-column: span 1;
+}
+
+body[data-view="songs"] .songs-grid .grid-art {
+  width: 100%;
+  aspect-ratio: 1;
+  height: auto !important;
+  min-height: 0;
+  border-radius: 5px !important;
+  background: rgba(231,233,231,.94) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+body[data-view="songs"] .songs-grid .grid-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body[data-view="songs"] .songs-grid .grid-art-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(105,107,106,.9);
+  background: rgba(229,230,228,.94) !important;
+}
+
+body[data-view="songs"] .songs-grid .grid-art-placeholder svg {
+  width: 36%;
+  height: 36%;
+  stroke-width: 2.6;
+}
+
+body[data-view="songs"] .songs-feature-card .grid-name {
+  display: block;
+  margin: 6px 2px 0;
+  overflow: hidden;
+  color: #f6f7f5 !important;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-view="songs"] .songs-feature-card .grid-sub {
+  display: block;
+  margin: 2px 2px 0;
+  overflow: hidden;
+  color: rgba(247,248,246,.7) !important;
+  font-size: 8px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body[data-view="songs"] .songs-mini-card .grid-name,
+body[data-view="songs"] .songs-mini-card .grid-sub {
+  display: none !important;
+}
+
+body[data-view="songs"] .songs-mini-card .grid-art {
+  border-radius: 4px !important;
+}
+
+body[data-view="songs"] .songs-grid-card.selected .grid-art {
+  outline: 2px solid rgba(255,255,255,.9);
+  outline-offset: 2px;
+}
+
+body[data-view="songs"] #player-panel {
+  left: 14px !important;
+  right: 14px !important;
+  bottom: 10px !important;
+  width: auto !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 5px 8px !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  border-radius: 7px !important;
+  background: rgba(221,228,218,.78) !important;
+  backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow: 0 8px 22px rgba(19,48,49,.14) !important;
+  color: #263331 !important;
+}
+
+body[data-view="songs"] #art-container {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+body[data-view="songs"] #art-frame {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 5px !important;
+  background: rgba(233,235,232,.96) !important;
+}
+
+body[data-view="songs"] #art-empty svg {
+  width: 18px;
+  height: 18px;
+  color: #777b79;
+}
+
+body[data-view="songs"] #player-info {
+  left: 49px !important;
+  width: 145px !important;
+}
+
+body[data-view="songs"] #player-title {
+  color: #1e2524 !important;
+  font-size: 10px !important;
+  font-weight: 700;
+}
+
+body[data-view="songs"] #player-artist {
+  color: #596260 !important;
+  font-size: 8px !important;
+}
+
+body[data-view="songs"] #seek-container {
+  gap: 7px !important;
+  padding: 0 12px !important;
+}
+
+body[data-view="songs"] .time-label {
+  color: rgba(47,57,55,.56) !important;
+  font-size: 7px !important;
+}
+
+body[data-view="songs"] #seek-track {
+  height: 3px !important;
+  background: rgba(255,255,255,.72) !important;
+  border-radius: 999px !important;
+}
+
+body[data-view="songs"] #seek-fill {
+  background: #2f6870 !important;
+  border-radius: 999px !important;
+}
+
+body[data-view="songs"] #player-actions {
+  gap: 2px !important;
+}
+
+body[data-view="songs"] .player-action {
+  width: 24px !important;
+  height: 24px !important;
+  color: #2c3835 !important;
+  border-radius: 5px !important;
+}
+
+body[data-view="songs"] .player-action:hover {
+  background: rgba(255,255,255,.32) !important;
+}
+
+body[data-view="songs"] #queue-list {
+  bottom: 52px !important;
+  right: 0 !important;
+  width: 280px !important;
+  max-height: 330px !important;
+  border-radius: 8px !important;
+}
+
+body[data-view="songs"] #content::-webkit-scrollbar,
+body[data-view="songs"] #library-view::-webkit-scrollbar {
+  width: 5px;
+}
+
+body[data-view="songs"] #content::-webkit-scrollbar-thumb,
+body[data-view="songs"] #library-view::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.38);
+  border-radius: 99px;
+}
+
+@media (max-width: 850px) {
+  body[data-view="songs"] .songs-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  body[data-view="songs"] .songs-feature-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  body[data-view="songs"] #page-toolbar {
+    padding: 8px 10px 0 !important;
+  }
+  body[data-view="songs"] #library-view {
+    padding: 0 10px 10px !important;
+  }
+  body[data-view="songs"] .songs-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px !important;
+  }
+  body[data-view="songs"] .songs-feature-card {
+    grid-column: span 2;
+  }
+  body[data-view="songs"] #player-panel {
+    left: 10px !important;
+    right: 10px !important;
+  }
+}
